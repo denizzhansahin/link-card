@@ -1,0 +1,15 @@
+Veri Tabanı:
+
+KULLANICI:
+id , isim, soyisim , eposta , sifre , oluşturma tarihi, silme tarihi, güncelleme tarihi, ülke, fotoğraf
+
+LİNKLER:
+asıl metin adı, kısaltılmış link token, oluşturma tarihi, güncelleme tarihi
+
+KİŞİSEL LİNKLER : 
+instagram, facebook, x , spotify,  youtube, linkedin, reddit, vk.com, medium, web site,
+benim favori müzik videom, youtube list, youtube video, blog sitem,
+spotify list, alışveriş listem
+
+KURUMSAL LİNKLER:
+iş epostası, iş web sitesi, işyeri web sitesi, iş yeri adresi, iş telefonu, iş yeri telefon, iş yeri eposta,
