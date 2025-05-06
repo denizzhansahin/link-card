@@ -1,5 +1,8 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany, OneToOne, JoinColumn } from 'typeorm';
+import { Link } from './kisalink.entity';
+import { KisiselLink } from './kisiselLink.entity';
+import { KurumsalLink } from './kurumsalLink.entity';
 
 @ObjectType() // GraphQL için
 @Entity('kullanici') // TypeORM için
@@ -43,4 +46,18 @@ export class Kullanici {
   @Field({ nullable: true })
   @Column({ nullable: true })
   fotograf?: string;
+
+  @Field(() => [Link], { nullable: true }) // GraphQL için
+  @OneToMany(() => Link, (link) => link.kullanici) // TypeORM ilişki
+  linkler?: Link[];
+
+  @Field(() => KisiselLink, { nullable: true }) // GraphQL için
+  @OneToOne(() => KisiselLink, { nullable: true }) // TypeORM ilişki
+  @JoinColumn() // İlişkiyi belirten sütun
+  kisiselLink?: KisiselLink;
+
+  @Field(() => KurumsalLink, { nullable: true }) // GraphQL için
+  @OneToOne(() => KurumsalLink, { nullable: true }) // TypeORM ilişki
+  @JoinColumn() // İlişkiyi belirten sütun
+  kurumsalLink?: KurumsalLink;
 }
