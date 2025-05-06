@@ -15,6 +15,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { AuthModule } from './auth/auth.module';
+import { LinkIslemlerModule } from './link_islemler/link_islemler.module';
 
 @Module({
   imports: [
@@ -33,7 +34,8 @@ import { AuthModule } from './auth/auth.module';
       //logging: true,
       entities: [Kullanici,KisiselLink,KurumsalLink,Link],
     }),
-    KullaniciModule],
+    KullaniciModule,
+    LinkIslemlerModule],
   controllers: [AppController],
   providers: [AppService,KullaniciGraphQl
     ,

@@ -1,8 +1,13 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 
 @InputType() // GraphQL input type
 export class KurumsalLinkOlusturDto {
+    @Field() // Kurumsal link her zaman bir kullanıcıya ait olmalı
+    @IsNotEmpty()
+    @IsUUID()
+    kullaniciId: string;
+
     @Field({ nullable: true })
     @IsOptional()
     @IsString()
