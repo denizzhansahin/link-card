@@ -10,6 +10,7 @@ import { KullaniciService } from 'src/kullanici/kullanici.service';
 import { Kullanici } from 'src/Entities/kullanici.entity';
 import { KullaniciOlusturDto } from 'src/DTO/kullanici_olustur.dto';
 import { KullaniciGuncelleDto } from 'src/DTO/kullanici_guncelle.dto';
+import { Public } from 'src/auth/decorators/public.deacorator';
 // import { Public } from 'src/auth/decorators/public.deacorator'; // Kullanılmıyor gibi
 
 @Resolver(() => Kullanici)
@@ -49,7 +50,7 @@ export class KullaniciGraphQl {
         }
     }
 
-    @Roles(Role.ADMIN) // Kullanıcı oluşturma sadece Admin yetkisi olmalı
+    @Public()
     @Mutation(() => Kullanici, { name: 'kullaniciOlustur' })
     async createKullanici(
         @Args('kullaniciData') kullaniciData: KullaniciOlusturDto,

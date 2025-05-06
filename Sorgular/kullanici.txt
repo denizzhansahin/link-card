@@ -1,0 +1,149 @@
+mutation YeniKullaniciOlustur($userData: KullaniciOlusturDto!) {
+    kullaniciOlustur(kullaniciData: $userData) {
+    id
+    nickname
+    isim
+    soyisim
+    eposta
+    role
+    ulke
+    fotograf
+    olusturmaTarihi
+  }
+}
+
+
+{
+  "userData": {
+    "isim": "ADMIN",
+    "soyisim": "ADMIN",
+    "nickname": "admin",
+    "eposta": "admin@example.com",
+    "sifre": "admin",
+    "role": "ADMIN",
+    "ulke": "Türkiye",
+    "fotograf": "admin"
+  }
+}
+
+
+query TumKullanicilariGetir {
+  kullanicilar {
+    id
+    nickname
+    isim
+    soyisim
+    eposta
+    role
+    olusturmaTarihi
+  }
+}
+
+query KullanicilarVeKisiselLinkleri {
+  kullanicilar {
+    id
+    nickname
+    isim
+    eposta
+    kisiselLink {
+      id
+      instagram
+      webSite
+    }
+  }
+}
+
+query KullaniciBulById($userId: String!) {
+  kullaniciBul(id: $userId) {
+    id
+    nickname
+    isim
+    soyisim
+    eposta
+    ulke
+    fotograf
+    role
+    olusturmaTarihi
+    guncellemeTarihi
+    silmeTarihi
+  }
+}
+
+{
+  "userId": "0b094670-8562-4d05-8b64-3d2212faa06a"
+}
+
+query KullaniciDetayliBul($userId: String!) {
+  kullaniciBul(id: $userId) {
+    id
+    nickname
+    isim
+    soyisim
+    eposta
+    role
+    ulke
+    fotograf
+    olusturmaTarihi
+    guncellemeTarihi
+    linkler {
+      id
+      asilMetinAdi
+      kisaltmaToken
+      olusturmaTarihi
+    }
+    kisiselLink {
+      id
+      instagram
+      facebook
+      x
+      spotify
+      youtube
+      linkedin
+      reddit
+      vk
+      medium
+      webSite
+      favoriMuzikVideom
+      youtubeList
+      youtubeVideo
+      blogSitem
+      spotifyList
+      alisverisListem
+    }
+    kurumsalLink {
+      id
+      isEpostasi
+      isWebSitesi
+      isyeriWebSitesi
+      isYeriAdresi
+      isTelefonu
+      isYeriTelefon
+      isYeriEposta
+      olusturmaTarihi
+      guncellemeTarihi
+    }
+  }
+}
+
+
+mutation KullaniciyiGuncelle($userId: String!, $updateData: KullaniciGuncelleDto!) {
+  kullaniciGuncelle(kullaniciId: $userId, kullaniciGuncelleData: $updateData) {
+    id
+    nickname
+    isim
+    soyisim
+    eposta
+    role
+    ulke
+    fotograf
+    guncellemeTarihi
+  }
+}
+
+
+{
+  "userId": "0b094670-8562-4d05-8b64-3d2212faa06a",
+  "updateData": {
+    "fotograf": "adminnnn"
+  }
+}

@@ -14,10 +14,11 @@ import { KullaniciGraphQl } from './GraphQl/KullaniciQuery';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
-    
+    AuthModule,
     ConfigModule.forRoot({ isGlobal: true, expandVariables: true }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,

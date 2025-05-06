@@ -23,8 +23,9 @@ export class AuthService {
     if (!user) throw new UnauthorizedException("User not found");
     const isPasswordMatch = await compare(password, user.sifre);
     if (!isPasswordMatch) throw new UnauthorizedException('Invalid credentials');
-    console.log("Kullanıcı validate user:", user);
-    return { id: user.id, role: user.role, user }; // Rol bilgisini ekliyoruz
+    const { sifre, kurumsalLink, linkler, kisiselLink, ...userWithoutPassword } = user;
+    console.log("Kullanıcı validate user:", userWithoutPassword);
+    return { id: user.id, role: user.role, userWithoutPassword }; // Rol bilgisini ekliyoruz
   }
 
   login(userId: string) {
