@@ -9,6 +9,10 @@ export class KullaniciOlusturDto {
     @Length(1, 50)
     soyisim: string;
 
+    @IsString()
+    @Length(1, 50)
+    nickname: string
+
     @IsEmail()
     eposta: string;
 

@@ -7,7 +7,7 @@ import { CurrentUser } from './types/current-user';
 import { AuthJwtPayload } from './types/auth-jwtPayload';
 import * as bcrypt from 'bcrypt';
 import { compare } from 'bcrypt';
-import { KullaniciService } from 'src/kullanicilar/kullanicilar.service';
+import { KullaniciService } from '../kullanici/kullanici.service';
 
 @Injectable()
 export class AuthService {
@@ -27,7 +27,7 @@ export class AuthService {
     return { id: user.id, role: user.role, user }; // Rol bilgisini ekliyoruz
   }
 
-  login(userId: number) {
+  login(userId: string) {
     console.log("login token oluşturma");
     const payload: AuthJwtPayload = { sub: userId };
     const token = this.jwtService.sign(payload);
@@ -52,7 +52,7 @@ export class AuthService {
     };
   }
 
-  async validateJwtUser(userId: number): Promise<CurrentUser | null> {
+  async validateJwtUser(userId: string): Promise<CurrentUser | null> {
     console.log("JWT kullanıcı doğrulama:", userId);
     const user = await this.userService.kullaniciBul(userId);
     if (!user) {

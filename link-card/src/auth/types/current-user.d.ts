@@ -1,6 +1,6 @@
 
 
 export type CurrentUser = {
-    id:number,
+    id:string,
     role:Role
 }

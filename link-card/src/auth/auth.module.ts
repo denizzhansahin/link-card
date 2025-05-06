@@ -8,10 +8,10 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import jwtConfig from './config/jwt.config';
 import refreshJwtConfig from './config/refresh-jwt.config';
-import { Kullanici } from 'src/Entities/kullanici';
 import { LocalStrategy } from './strategy/local.strategy';
 import { JwtStrategy } from './strategy/jwt.strategy';
-import { KullaniciService } from 'src/kullanicilar/kullanicilar.service';
+import { Kullanici } from 'src/Entities/kullanici.entity';
+import { KullaniciService } from 'src/kullanici/kullanici.service';
 
 
 @Module({
