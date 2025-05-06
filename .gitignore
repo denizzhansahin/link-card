@@ -1,3 +1,7 @@
 /link-card/node_modules
 /link-card/dist
 /link-card/build
+
+/link-card-frontend/node_modules
+/link-card-frontend/dist
+/link-card-frontend/build
