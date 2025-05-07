@@ -3,8 +3,14 @@ import { Mail, Globe, Phone, MapPin, Building, Edit, Save, PlusCircle, BarChart2
 import { useToast } from '../context/ToastContext';
 import BusinessCard from '../components/dashboard/BusinessCard';
 import QRCodeModal from '../components/link/QRCodeModal';
+import { useParams } from 'react-router-dom';
 
-const CorporateDashboard: React.FC = () => {
+const UserCorporateDashboard: React.FC = () => {
+  const { id } = useParams(); // :id olarak tanımladığımız parametreyi alır
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+
   const { addToast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
@@ -36,12 +42,7 @@ const CorporateDashboard: React.FC = () => {
     conversionRate: '3.7%',
   };
 
-  const toggleEditMode = () => {
-    setIsEditing(!isEditing);
-    if (isEditing) {
-      addToast('success', 'Corporate details updated successfully!');
-    }
-  };
+
 
   const handleAddLink = () => {
     addToast('info', 'This feature will allow you to add a new corporate link');
@@ -60,26 +61,7 @@ const CorporateDashboard: React.FC = () => {
             <h1 className="text-3xl font-bold">{corporateDetails.companyName}</h1>
             <p className="mt-2 opacity-90">Corporate Link Management Dashboard</p>
           </div>
-          <button
-            onClick={toggleEditMode}
-            className={`px-4 py-2 rounded-md border border-white/30 backdrop-blur-sm transition-all ${
-              isEditing 
-                ? 'bg-white text-blue-600 hover:bg-blue-50' 
-                : 'bg-white/10 hover:bg-white/20'
-            }`}
-          >
-            {isEditing ? (
-              <span className="flex items-center gap-1.5">
-                <Save className="w-4 h-4" />
-                Save Changes
-              </span>
-            ) : (
-              <span className="flex items-center gap-1.5">
-                <Edit className="w-4 h-4" />
-                Edit Dashboard
-              </span>
-            )}
-          </button>
+
         </div>
       </div>
 
@@ -92,7 +74,7 @@ const CorporateDashboard: React.FC = () => {
             title="Business Email"
             value={corporateDetails.email}
             type="email"
-            isEditing={isEditing}
+            isEditing={false}
             onEdit={() => addToast('info', 'Edit business email')}
             onDelete={() => addToast('info', 'Delete business email')}
             onGenerateQR={() => handleGenerateQR(`mailto:${corporateDetails.email}`)}
@@ -102,7 +84,7 @@ const CorporateDashboard: React.FC = () => {
             title="Office Email"
             value={corporateDetails.officeEmail}
             type="email"
-            isEditing={isEditing}
+            isEditing={false}
             onEdit={() => addToast('info', 'Edit office email')}
             onDelete={() => addToast('info', 'Delete office email')}
             onGenerateQR={() => handleGenerateQR(`mailto:${corporateDetails.officeEmail}`)}
@@ -112,7 +94,7 @@ const CorporateDashboard: React.FC = () => {
             title="Business Website"
             value={corporateDetails.website}
             type="website"
-            isEditing={isEditing}
+            isEditing={false}
             onEdit={() => addToast('info', 'Edit business website')}
             onDelete={() => addToast('info', 'Delete business website')}
             onGenerateQR={() => handleGenerateQR(corporateDetails.website)}
@@ -122,7 +104,7 @@ const CorporateDashboard: React.FC = () => {
             title="Corporate Website"
             value={corporateDetails.businessWebsite}
             type="website"
-            isEditing={isEditing}
+            isEditing={false}
             onEdit={() => addToast('info', 'Edit corporate website')}
             onDelete={() => addToast('info', 'Delete corporate website')}
             onGenerateQR={() => handleGenerateQR(corporateDetails.businessWebsite)}
@@ -132,7 +114,7 @@ const CorporateDashboard: React.FC = () => {
             title="Office Address"
             value={corporateDetails.officeAddress}
             type="address"
-            isEditing={isEditing}
+            isEditing={false}
             onEdit={() => addToast('info', 'Edit office address')}
             onDelete={() => addToast('info', 'Delete office address')}
           />
@@ -141,7 +123,7 @@ const CorporateDashboard: React.FC = () => {
             title="Business Phone"
             value={corporateDetails.phone}
             type="phone"
-            isEditing={isEditing}
+            isEditing={false}
             onEdit={() => addToast('info', 'Edit business phone')}
             onDelete={() => addToast('info', 'Delete business phone')}
             onGenerateQR={() => handleGenerateQR(`tel:${corporateDetails.phone}`)}
@@ -151,7 +133,7 @@ const CorporateDashboard: React.FC = () => {
             title="Office Phone"
             value={corporateDetails.officePhone}
             type="phone"
-            isEditing={isEditing}
+            isEditing={false}
             onEdit={() => addToast('info', 'Edit office phone')}
             onDelete={() => addToast('info', 'Delete office phone')}
             onGenerateQR={() => handleGenerateQR(`tel:${corporateDetails.officePhone}`)}
@@ -181,7 +163,7 @@ const CorporateDashboard: React.FC = () => {
                 title={link.title}
                 value={link.url}
                 type="website"
-                isEditing={isEditing}
+                isEditing={false}
                 onEdit={() => addToast('info', `Edit ${link.title}`)}
                 onDelete={() => addToast('info', `Delete ${link.title}`)}
                 onGenerateQR={() => handleGenerateQR(link.url)}
@@ -199,8 +181,9 @@ const CorporateDashboard: React.FC = () => {
         />
       )}
 
+
     </div>
   );
 };
 
-export default CorporateDashboard;
+export default UserCorporateDashboard;

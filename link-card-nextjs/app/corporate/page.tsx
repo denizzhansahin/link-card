@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from 'react';
 import { Mail, Globe, Phone, MapPin, Building, Edit, Save, PlusCircle, BarChart2 } from 'lucide-react';
 import { useToast } from '../context/ToastContext';

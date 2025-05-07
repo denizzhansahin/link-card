@@ -4,10 +4,16 @@ import SocialCard from '../components/dashboard/SocialCard';
 import LinkCard from '../components/dashboard/LinkCard';
 import { useToast } from '../context/ToastContext';
 import QRCodeModal from '../components/link/QRCodeModal';
+import { useParams } from 'react-router-dom';
 
-const PersonalDashboard: React.FC = () => {
+const UserPersonalDashboard: React.FC = () => {
+
+  const { id } = useParams(); // :id olarak tanımladığımız parametreyi alır
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
   const { addToast } = useToast();
-  const [isEditing, setIsEditing] = useState(false);
+
   const [showQRModal, setShowQRModal] = useState(false);
   const [selectedUrl, setSelectedUrl] = useState('');
   
@@ -51,12 +57,7 @@ const PersonalDashboard: React.FC = () => {
     }
   };
 
-  const toggleEditMode = () => {
-    setIsEditing(!isEditing);
-    if (isEditing) {
-      addToast('success', 'Changes saved successfully!');
-    }
-  };
+
 
   const handleAddLink = () => {
     addToast('info', 'This feature will allow you to add a new link');
@@ -75,16 +76,7 @@ const PersonalDashboard: React.FC = () => {
             <h1 className="text-3xl font-bold">Personal Dashboard</h1>
             <p className="mt-2 opacity-90">Manage all your personal links in one place</p>
           </div>
-          <button
-            onClick={toggleEditMode}
-            className={`px-4 py-2 rounded-md border border-white/30 backdrop-blur-sm transition-all ${
-              isEditing 
-                ? 'bg-white text-pink-600 hover:bg-pink-50' 
-                : 'bg-white/10 hover:bg-white/20'
-            }`}
-          >
-            {isEditing ? 'Save Changes' : 'Edit Dashboard'}
-          </button>
+
         </div>
       </div>
 
@@ -92,15 +84,7 @@ const PersonalDashboard: React.FC = () => {
       <section>
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">Social Media</h2>
-          {isEditing && (
-            <button 
-              onClick={handleAddLink}
-              className="flex items-center gap-1 text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
-            >
-              <PlusCircle className="h-4 w-4" />
-              Add Social Link
-            </button>
-          )}
+
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -111,7 +95,7 @@ const PersonalDashboard: React.FC = () => {
               username={link.username}
               url={link.url}
               icon={getPlatformIcon(link.platform)}
-              isEditing={isEditing}
+              isEditing={false}
               onEdit={() => addToast('info', `Edit ${link.platform} link`)}
               onDelete={() => addToast('info', `Delete ${link.platform} link`)}
               onGenerateQR={() => handleGenerateQR(link.url)}
@@ -124,15 +108,7 @@ const PersonalDashboard: React.FC = () => {
       <section>
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">Custom Links</h2>
-          {isEditing && (
-            <button 
-              onClick={handleAddLink}
-              className="flex items-center gap-1 text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
-            >
-              <PlusCircle className="h-4 w-4" />
-              Add Custom Link
-            </button>
-          )}
+
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows">
@@ -148,7 +124,7 @@ const PersonalDashboard: React.FC = () => {
                 title={link.title}
                 url={link.url}
                 icon={getPlatformIcon(link.icon)}
-                isEditing={isEditing}
+                isEditing={false}
                 onEdit={() => addToast('info', `Edit ${link.title}`)}
                 onDelete={() => addToast('info', `Delete ${link.title}`)}
                 onGenerateQR={() => handleGenerateQR(link.url)}
@@ -171,4 +147,4 @@ const PersonalDashboard: React.FC = () => {
   );
 };
 
-export default PersonalDashboard;
+export default UserPersonalDashboard;

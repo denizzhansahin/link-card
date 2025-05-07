@@ -9,6 +9,8 @@ import RegisterPage from './pages/RegisterPage';
 import PersonalDashboard from './pages/PersonalDashboard';
 import CorporateDashboard from './pages/CorporateDashboard';
 import NotFoundPage from './pages/NotFoundPage';
+import UserPersonalDashboard from './pages/UserPersonalDashboard';
+import UserCorporateDashboard from './pages/UserCorporateDashboard';
 
 function App() {
   return (
@@ -21,6 +23,8 @@ function App() {
             <Route path="/" element={<Layout><HomePage /></Layout>} />
             <Route path="/personal" element={<Layout><PersonalDashboard /></Layout>} />
             <Route path="/corporate" element={<Layout><CorporateDashboard /></Layout>} />
+            <Route path="/p/:id" element={<Layout><UserPersonalDashboard /></Layout>} />
+            <Route path="/c/:id" element={<Layout><UserCorporateDashboard /></Layout>} />
             <Route path="*" element={<Layout><NotFoundPage /></Layout>} />
           </Routes>
         </Router>

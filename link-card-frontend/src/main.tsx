@@ -5,6 +5,8 @@ import './index.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+      {/* App bileşeni artık context'e erişebilir */}
+      <App />
+
   </StrictMode>
 );

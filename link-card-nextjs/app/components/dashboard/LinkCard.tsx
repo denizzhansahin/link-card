@@ -1,3 +1,5 @@
+"use client"
+
 import React from 'react';
 import { ExternalLink, Edit, Trash2, Copy, QrCode } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';

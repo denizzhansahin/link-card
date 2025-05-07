@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from 'react';
 import { PlusCircle, Instagram, Facebook, Twitter, AlignJustify as Spotify, Youtube, Linkedin, Globe, Book, ShoppingBag, MessageCircle, FileText } from 'lucide-react';
 import SocialCard from '../components/dashboard/SocialCard';
