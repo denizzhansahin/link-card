@@ -1,5 +1,6 @@
 import React from 'react';
-import { ExternalLink, Edit, Trash2 } from 'lucide-react';
+import { ExternalLink, Edit, Trash2, Copy, QrCode } from 'lucide-react';
+import { useToast } from '../../context/ToastContext';
 
 interface SocialCardProps {
   platform: string;
@@ -9,6 +10,7 @@ interface SocialCardProps {
   isEditing: boolean;
   onEdit: () => void;
   onDelete: () => void;
+  onGenerateQR?: () => void;
 }
 
 const SocialCard: React.FC<SocialCardProps> = ({
@@ -18,8 +20,11 @@ const SocialCard: React.FC<SocialCardProps> = ({
   icon,
   isEditing,
   onEdit,
-  onDelete
+  onDelete,
+  onGenerateQR
 }) => {
+  const { addToast } = useToast();
+
   const getPlatformColor = (platform: string): string => {
     switch (platform.toLowerCase()) {
       case 'instagram': return 'from-pink-500 to-purple-500';
@@ -28,60 +33,93 @@ const SocialCard: React.FC<SocialCardProps> = ({
       case 'spotify': return 'from-green-500 to-green-400';
       case 'youtube': return 'from-red-600 to-red-500';
       case 'linkedin': return 'from-blue-700 to-blue-600';
+      case 'reddit': return 'from-orange-500 to-red-500';
+      case 'vk': return 'from-blue-500 to-blue-400';
+      case 'medium': return 'from-gray-800 to-gray-700';
       default: return 'from-gray-500 to-gray-400';
     }
   };
 
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      addToast('success', 'Link copied to clipboard!');
+    } catch (error) {
+      addToast('error', 'Failed to copy link');
+    }
+  };
+
   return (
-    <div className={`relative group overflow-hidden rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all duration-300 hover:shadow-md ${isEditing ? 'ring-2 ring-indigo-300 dark:ring-indigo-700' : ''}`}>
-      {/* Platform gradient header */}
-      <div className={`h-3 bg-gradient-to-r ${getPlatformColor(platform)}`}></div>
+    <div 
+      className={`relative group h-48 overflow-hidden rounded-xl shadow-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl ${
+        isEditing ? 'ring-2 ring-indigo-300 dark:ring-indigo-700' : ''
+      }`}
+    >
+      <div className={`absolute inset-0 bg-gradient-to-br ${getPlatformColor(platform)} opacity-90`}></div>
       
-      <div className="p-4">
-        <div className="flex items-center gap-3 mb-2">
-          <div className={`flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r ${getPlatformColor(platform)} text-white`}>
-            {icon}
-          </div>
-          <div>
-            <h3 className="font-medium text-gray-900 dark:text-white capitalize">
-              {platform}
-            </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              @{username}
-            </p>
+      <div className="relative h-full p-6 flex flex-col justify-between text-white">
+        <div>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 flex items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+              {icon}
+            </div>
+            <div>
+              <h3 className="text-xl font-bold capitalize">
+                {platform}
+              </h3>
+              <p className="text-sm opacity-90">
+                @{username}
+              </p>
+            </div>
           </div>
         </div>
-        
-        <div className="mt-4">
+
+        <div className="mt-auto">
           {isEditing ? (
             <div className="flex space-x-2">
               <button
                 onClick={onEdit}
-                className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-300 dark:hover:bg-indigo-900/50 transition-colors"
+                className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-colors"
               >
-                <Edit className="w-3.5 h-3.5" />
+                <Edit className="w-4 h-4" />
                 Edit
               </button>
               <button
                 onClick={onDelete}
-                className="flex-1 flex items-center justify-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md bg-red-50 text-red-700 hover:bg-red-100 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900/50 transition-colors"
+                className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-colors"
               >
-                <Trash2 className="w-3.5 h-3.5" />
+                <Trash2 className="w-4 h-4" />
                 Delete
               </button>
             </div>
           ) : (
-            <a
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full text-center py-2 px-4 bg-gray-50 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 transition-colors"
-            >
-              <span className="flex items-center justify-center gap-1.5">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={copyToClipboard}
+                className="p-2 rounded-lg bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-colors"
+                aria-label="Copy link"
+              >
+                <Copy className="w-5 h-5" />
+              </button>
+              {onGenerateQR && (
+                <button
+                  onClick={onGenerateQR}
+                  className="p-2 rounded-lg bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-colors"
+                  aria-label="Generate QR code"
+                >
+                  <QrCode className="w-5 h-5" />
+                </button>
+              )}
+              <a
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-colors"
+              >
                 Visit Profile
-                <ExternalLink className="w-3.5 h-3.5" />
-              </span>
-            </a>
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            </div>
           )}
         </div>
       </div>

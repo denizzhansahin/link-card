@@ -3,13 +3,10 @@ import { PlusCircle, Instagram, Facebook, Twitter, AlignJustify as Spotify, Yout
 import SocialCard from '../components/dashboard/SocialCard';
 import LinkCard from '../components/dashboard/LinkCard';
 import { useToast } from '../context/ToastContext';
-import QRCodeModal from '../components/link/QRCodeModal';
 
 const PersonalDashboard: React.FC = () => {
   const { addToast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
-  const [showQRModal, setShowQRModal] = useState(false);
-  const [selectedUrl, setSelectedUrl] = useState('');
   
   const [socialLinks, setSocialLinks] = useState([
     { id: 1, platform: 'instagram', username: 'creativephoto', url: 'https://instagram.com/creativephoto' },
@@ -24,13 +21,13 @@ const PersonalDashboard: React.FC = () => {
   ]);
 
   const [customLinks, setCustomLinks] = useState([
-    { id: 1, title: 'Personal Website', url: 'https://example.com', icon: 'globe', size: 'large' },
-    { id: 2, title: 'Favorite Music Video', url: 'https://youtube.com/watch?v=abcdef', icon: 'youtube', size: 'large' },
-    { id: 3, title: 'YouTube Playlist', url: 'https://youtube.com/playlist?list=123', icon: 'youtube', size: 'large' },
-    { id: 4, title: 'Latest Video', url: 'https://youtube.com/watch?v=latest', icon: 'youtube', size: 'large' },
-    { id: 5, title: 'Blog', url: 'https://example.com/blog', icon: 'book', size: 'large' },
-    { id: 6, title: 'Spotify Playlist', url: 'https://open.spotify.com/playlist/12345', icon: 'spotify', size: 'large' },
-    { id: 7, title: 'Shopping List', url: 'https://example.com/shopping', icon: 'shopping', size: 'large' },
+    { id: 1, title: 'Personal Website', url: 'https://example.com', icon: 'globe' },
+    { id: 2, title: 'Favorite Music Video', url: 'https://youtube.com/watch?v=abcdef', icon: 'youtube' },
+    { id: 3, title: 'YouTube Playlist', url: 'https://youtube.com/playlist?list=123', icon: 'youtube' },
+    { id: 4, title: 'Latest Video', url: 'https://youtube.com/watch?v=latest', icon: 'youtube' },
+    { id: 5, title: 'Blog', url: 'https://example.com/blog', icon: 'book' },
+    { id: 6, title: 'Spotify Playlist', url: 'https://open.spotify.com/playlist/12345', icon: 'spotify' },
+    { id: 7, title: 'Shopping List', url: 'https://example.com/shopping', icon: 'shopping' },
   ]);
 
   const getPlatformIcon = (platform: string) => {
@@ -62,11 +59,6 @@ const PersonalDashboard: React.FC = () => {
     addToast('info', 'This feature will allow you to add a new link');
   };
 
-  const handleGenerateQR = (url: string) => {
-    setSelectedUrl(url);
-    setShowQRModal(true);
-  };
-
   return (
     <div className="space-y-8 pt-14">
       <div className="bg-gradient-to-r from-pink-500 to-orange-500 dark:from-pink-700 dark:to-orange-700 rounded-xl shadow-lg p-8 text-white">
@@ -88,7 +80,7 @@ const PersonalDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Social Media Links - Windows 8 Style */}
+      {/* Social Media Links */}
       <section>
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">Social Media</h2>
@@ -103,7 +95,7 @@ const PersonalDashboard: React.FC = () => {
           )}
         </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {socialLinks.map((link) => (
             <SocialCard
               key={link.id}
@@ -114,13 +106,12 @@ const PersonalDashboard: React.FC = () => {
               isEditing={isEditing}
               onEdit={() => addToast('info', `Edit ${link.platform} link`)}
               onDelete={() => addToast('info', `Delete ${link.platform} link`)}
-              onGenerateQR={() => handleGenerateQR(link.url)}
             />
           ))}
         </div>
       </section>
 
-      {/* Custom Links - Windows 8 Style */}
+      {/* Custom Links */}
       <section>
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">Custom Links</h2>
@@ -135,36 +126,20 @@ const PersonalDashboard: React.FC = () => {
           )}
         </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows">
+        <div className="grid grid-cols-1 gap-3">
           {customLinks.map((link) => (
-            <div
+            <LinkCard
               key={link.id}
-              className={`${
-                link.size === 'large' ? 'sm:col-span-2 sm:row-span-2' :
-                link.size === 'medium' ? 'sm:col-span-2' : ''
-              }`}
-            >
-              <LinkCard
-                title={link.title}
-                url={link.url}
-                icon={getPlatformIcon(link.icon)}
-                isEditing={isEditing}
-                onEdit={() => addToast('info', `Edit ${link.title}`)}
-                onDelete={() => addToast('info', `Delete ${link.title}`)}
-                onGenerateQR={() => handleGenerateQR(link.url)}
-              />
-            </div>
+              title={link.title}
+              url={link.url}
+              icon={getPlatformIcon(link.icon)}
+              isEditing={isEditing}
+              onEdit={() => addToast('info', `Edit ${link.title}`)}
+              onDelete={() => addToast('info', `Delete ${link.title}`)}
+            />
           ))}
         </div>
       </section>
-
-      {/* QR Code Modal */}
-      {showQRModal && (
-        <QRCodeModal
-          url={selectedUrl}
-          onClose={() => setShowQRModal(false)}
-        />
-      )}
 
       {/* Link Analytics */}
       <section className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
