@@ -4,10 +4,13 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Mail, Lock, LogIn } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
+import { useDispatch } from 'react-redux';
+import { setYukleniyor, setHata, setKullanici } from '@/app/redux/kullaniciGirisSlice';
 
 const LoginPage: React.FC = () => {
   const router = useRouter();
   const { addToast } = useToast();
+  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -17,18 +20,48 @@ const LoginPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    dispatch(setYukleniyor(true));
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // TODO: Implement actual login logic
+      const response = await fetch('http://192.168.0.166:5000/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed');
+      }
+
+      // Save tokens to localStorage
+      localStorage.setItem('token', data.userData.token);
+      localStorage.setItem('refreshToken', data.userData.refreshToken);
+
+      // Save user data to Redux and localStorage
+      dispatch(setKullanici(data.reqUser.user));
+      localStorage.setItem('user', JSON.stringify(data.reqUser.user));
+
+      // Redirect based on role
+      if (data.reqUser.role === 'ADMIN') {
+        router.push('/');
+      } else if (data.reqUser.role === 'KULLANICI') {
+        router.push('/personal');
+      } else {
+        router.push('/');
+      }
+
       addToast('success', 'Login successful!');
-      router.push('/personal');
-    } catch (error) {
-      addToast('error', 'Invalid credentials');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
+      addToast('error', errorMessage);
+      dispatch(setHata(errorMessage));
     } finally {
       setIsLoading(false);
+      dispatch(setYukleniyor(false));
     }
   };
 

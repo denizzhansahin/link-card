@@ -4,6 +4,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Mail, Lock, User, UserPlus } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
+import { useMutation } from '@apollo/client';
+import { CREATE_USER_MUTATION } from '../GraphQl/KullaniciGraphQl';
+
 
 const RegisterPage: React.FC = () => {
   const router = useRouter();
@@ -18,6 +21,8 @@ const RegisterPage: React.FC = () => {
     confirmPassword: '',
   });
 
+  const [createUser] = useMutation(CREATE_USER_MUTATION);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -29,12 +34,25 @@ const RegisterPage: React.FC = () => {
     }
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // TODO: Implement actual registration logic
-      addToast('success', 'Registration successful! Please sign in.');
-      router.push('/login');
+      const { data } = await createUser({
+        variables: {
+          userData: {
+            nickname: formData.nickname,
+            isim: formData.firstName,
+            soyisim: formData.lastName,
+            eposta: formData.email,
+            sifre: formData.password,
+            role: 'KULLANICI',
+            ulke: 'Türkiye',
+            fotograf: '',
+          },
+        },
+      });
+
+      if (data) {
+        addToast('success', 'Registration successful! Please sign in.');
+        router.push('/login');
+      }
     } catch (error) {
       addToast('error', 'Registration failed. Please try again.');
     } finally {

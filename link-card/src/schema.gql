@@ -71,11 +71,23 @@ type Kullanici {
 type Query {
   kullanicilar: [Kullanici!]!
   kullaniciBul(id: String!): Kullanici
+  getLinkById(id: String!): Link!
+  getAllLinks: [Link!]!
+  getKisiselLinkById(id: String!): KisiselLink!
+  getAllKisiselLinks: [KisiselLink!]!
+  getKurumsalLinkById(id: Float!): KurumsalLink!
+  getAllKurumsalLinks: [KurumsalLink!]!
 }
 
 type Mutation {
   kullaniciOlustur(kullaniciData: KullaniciOlusturDto!): Kullanici!
   kullaniciGuncelle(kullaniciId: String!, kullaniciGuncelleData: KullaniciGuncelleDto!): Kullanici!
+  kisaLinkOlustur(linkData: KisaLinkOlusturDto!): Link!
+  kisaLinkGuncelle(id: String!, linkData: KisaLinkGuncelleDto!): Link!
+  kisiselLinkOlustur(kisiselLinkData: KisiselLinkOlusturDto!): KisiselLink!
+  kisiselLinkGuncelle(id: String!, kisiselLinkData: KisiselLinkGuncelleDto!): KisiselLink!
+  kurumsalLinkOlustur(kurumsalLinkData: KurumsalLinkOlusturDto!): KurumsalLink!
+  kurumsalLinkGuncelle(id: Float!, kurumsalLinkData: KurumsalLinkGuncelleDto!): KurumsalLink!
 }
 
 input KullaniciOlusturDto {
@@ -98,4 +110,76 @@ input KullaniciGuncelleDto {
   ulke: String
   fotograf: String
   role: String
+}
+
+input KisaLinkOlusturDto {
+  asilMetinAdi: String!
+  kisaltmaToken: String!
+  kullaniciId: String
+}
+
+input KisaLinkGuncelleDto {
+  asilMetinAdi: String
+  kisaltmaToken: String
+  kullaniciId: String
+}
+
+input KisiselLinkOlusturDto {
+  kullaniciId: String!
+  instagram: String
+  facebook: String
+  x: String
+  spotify: String
+  youtube: String
+  linkedin: String
+  reddit: String
+  vk: String
+  medium: String
+  webSite: String
+  favoriMuzikVideom: String
+  youtubeList: String
+  youtubeVideo: String
+  blogSitem: String
+  spotifyList: String
+  alisverisListem: String
+}
+
+input KisiselLinkGuncelleDto {
+  instagram: String
+  facebook: String
+  x: String
+  spotify: String
+  youtube: String
+  linkedin: String
+  reddit: String
+  vk: String
+  medium: String
+  webSite: String
+  favoriMuzikVideom: String
+  youtubeList: String
+  youtubeVideo: String
+  blogSitem: String
+  spotifyList: String
+  alisverisListem: String
+}
+
+input KurumsalLinkOlusturDto {
+  kullaniciId: String!
+  isEpostasi: String
+  isWebSitesi: String
+  isyeriWebSitesi: String
+  isYeriAdresi: String
+  isTelefonu: String
+  isYeriTelefon: String
+  isYeriEposta: String
+}
+
+input KurumsalLinkGuncelleDto {
+  isEpostasi: String
+  isWebSitesi: String
+  isyeriWebSitesi: String
+  isYeriAdresi: String
+  isTelefonu: String
+  isYeriTelefon: String
+  isYeriEposta: String
 }

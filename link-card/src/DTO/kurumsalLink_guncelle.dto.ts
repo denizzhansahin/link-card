@@ -1,4 +1,27 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { KurumsalLinkOlusturDto } from './kurumsalLink_olustur.dto';
+import { InputType, Field } from '@nestjs/graphql';
 
-export class KurumsalLinkGuncelleDto extends PartialType(KurumsalLinkOlusturDto) {}
+@InputType()
+export class KurumsalLinkGuncelleDto extends PartialType(KurumsalLinkOlusturDto) {
+    @Field({ nullable: true })
+    isEpostasi?: string;
+
+    @Field({ nullable: true })
+    isWebSitesi?: string;
+
+    @Field({ nullable: true })
+    isyeriWebSitesi?: string;
+
+    @Field({ nullable: true })
+    isYeriAdresi?: string;
+
+    @Field({ nullable: true })
+    isTelefonu?: string;
+
+    @Field({ nullable: true })
+    isYeriTelefon?: string;
+
+    @Field({ nullable: true })
+    isYeriEposta?: string;
+}

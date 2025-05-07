@@ -1,7 +1,8 @@
+// filepath: c:\Users\densh\OneDrive\Masaüstü\LinkKisaltma\link-card\src\DTO\kisaLink_olustur.dto.ts
 import { Field, InputType } from '@nestjs/graphql';
 import { IsString, Length, IsOptional, IsUUID } from 'class-validator';
 
-@InputType() // GraphQL input type
+@InputType()
 export class KisaLinkOlusturDto {
     @Field()
     @IsString()
@@ -13,8 +14,8 @@ export class KisaLinkOlusturDto {
     @Length(1, 100)
     kisaltmaToken: string;
 
-    @Field({ nullable: true }) // Link bir kullanıcıya ait olmayabilir (genel linkler için)
+    @Field({ nullable: true })
     @IsOptional()
     @IsUUID()
-    kullaniciId?: string; // Bu linkin sahibi olan kullanıcının ID'si
+    kullaniciId?: string;
 }

@@ -16,7 +16,10 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { AuthModule } from './auth/auth.module';
 import { LinkIslemlerModule } from './link_islemler/link_islemler.module';
+import { LinkIslemlerGraphQl } from './GraphQl/LinkIslemlerQuery';
+import { LinkIslemlerService } from './link_islemler/link_islemler.service';
 
+// filepath: src/app.module.ts
 @Module({
   imports: [
     AuthModule,
@@ -25,27 +28,27 @@ import { LinkIslemlerModule } from './link_islemler/link_islemler.module';
       driver: ApolloDriver,
       autoSchemaFile: 'src/schema.gql',
       context: ({ req, res }) => ({ req, res }),
-      playground: true, // GraphQL Playground'u etkinleştir
+      playground: true,
     }),
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: 'database.sqlite',
       synchronize: true,
-      //logging: true,
-      entities: [Kullanici,KisiselLink,KurumsalLink,Link],
+      entities: [Kullanici, KisiselLink, KurumsalLink, Link], // Ensure Link is included here
     }),
     KullaniciModule,
-    LinkIslemlerModule],
+    LinkIslemlerModule, // Ensure this module is imported
+  ],
   controllers: [AppController],
-  providers: [AppService,KullaniciGraphQl
-    ,
+  providers: [
+    AppService,
     {
       provide: APP_GUARD,
-      useClass: JwtAuthGuard, // Tüm endpoint'leri JWT ile koru
+      useClass: JwtAuthGuard,
     },
     {
       provide: APP_GUARD,
-      useClass: RolesGuard, // Rol tabanlı koruma
+      useClass: RolesGuard,
     },
   ],
 })

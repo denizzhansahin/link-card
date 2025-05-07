@@ -1,24 +1,66 @@
-import { createSlice } from '@reduxjs/toolkit'
-import type { PayloadAction } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
 
-// Kullanici arayüzünüzü kullanıyoruz
-export interface Kullanici {
+
+export interface Link {
+  id: string;
+  asilMetinAdi: string;
+  kisaltmaToken: string;
+  olusturmaTarihi: Date;
+  guncellemeTarihi: Date;
+  kullanici?: Kullanici;
+}
+
+export interface KisiselLink {
+  id: string;
+  instagram?: string;
+  facebook?: string;
+  x?: string;
+  spotify?: string;
+  youtube?: string;
+  linkedin?: string;
+  reddit?: string;
+  vk?: string;
+  medium?: string;
+  webSite?: string;
+  favoriMuzikVideom?: string;
+  youtubeList?: string;
+  youtubeVideo?: string;
+  blogSitem?: string;
+  spotifyList?: string;
+  alisverisListem?: string;
+}
+
+export interface KurumsalLink {
   id: number;
+  isEpostasi?: string;
+  isWebSitesi?: string;
+  isyeriWebSitesi?: string;
+  isYeriAdresi?: string;
+  isTelefonu?: string;
+  isYeriTelefon?: string;
+  isYeriEposta?: string;
+  kullanici?: Kullanici;
+  olusturmaTarihi: Date;
+  guncellemeTarihi: Date;
+}
+// Kullanici arayüzünüzü güncelliyoruz
+export interface Kullanici {
+  id: string;
+  nickname: string;
   isim: string;
   soyisim: string;
   eposta: string;
-  role: string;
-  sehir: string | null; // Nullable olabilirler
-  ilce: string | null;
-  tam_adres: string | null;
-  tel_no: string | null;
-  profil_foto_base64: string | null;
-  boy: number | null;
-  kilo: number | null;
-  nickname: string;
-  created_at: string;
-  updated_at: string;
-  cihazKullaniciId?: number | null; // Dashboard için gerekliydi, ekleyelim
+  sifre: string;
+  olusturmaTarihi: Date;
+  silmeTarihi?: Date | null;
+  guncellemeTarihi: Date;
+  ulke?: string;
+  fotograf?: string;
+  linkler?: Link[];
+  kisiselLink?: KisiselLink;
+  kurumsalLink?: KurumsalLink;
+  role?: string;
 }
 
 export interface KullaniciGirisState {
@@ -39,7 +81,7 @@ export const girisState: KullaniciGirisState = {
   yukleniyor: false,
   kimlik: undefined,
   kullanici: undefined,
-}
+};
 
 export const girisSlice = createSlice({
   name: 'giris',
@@ -59,8 +101,8 @@ export const girisSlice = createSlice({
       state.kullanici = action.payload;
     },
   },
-})
+});
 
-export const { setGiris, setYukleniyor, setHata, setKullanici } = girisSlice.actions
+export const { setGiris, setYukleniyor, setHata, setKullanici } = girisSlice.actions;
 
-export default girisSlice.reducer
+export default girisSlice.reducer;
