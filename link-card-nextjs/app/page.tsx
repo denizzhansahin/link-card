@@ -1,7 +1,6 @@
 "use client";
-import Image from "next/image";
 import React, { useState } from 'react';
-import { Copy, QrCode, ChevronRight, Check, Link as LinkIcon, ArrowRight, Globe, User } from 'lucide-react';
+import { Copy, QrCode,  Check, Link as LinkIcon, Globe, User } from 'lucide-react';
 import LinkShorteningForm from "./components/link/LinkShorteningForm";
 import QRCodeModal from "./components/link/QRCodeModal";
 import { useToast } from "./context/ToastContext";

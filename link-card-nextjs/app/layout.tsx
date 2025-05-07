@@ -5,6 +5,7 @@ import { ToastProvider } from "./context/ToastContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import ClientComponent from "./ClientComponent";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,17 +32,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider>
-          <ToastProvider>
-            <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
-              <Navbar />
-              <main className="flex-grow mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-                {children}
-              </main>
-              <Footer />
-            </div>
-          </ToastProvider>
-        </ThemeProvider>
+
+        <ClientComponent>{children}</ClientComponent>
 
       </body>
     </html>

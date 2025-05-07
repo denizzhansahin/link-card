@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { Home } from 'lucide-react';
+import Link from 'next/link';
 
 const NotFoundPage: React.FC = () => {
   return (
@@ -14,7 +14,7 @@ const NotFoundPage: React.FC = () => {
         </p>
       </div>
       <Link
-        to="/"
+        href="/"
         className="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors"
       >
         <Home className="mr-2 h-5 w-5" />

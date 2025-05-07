@@ -1,15 +1,13 @@
 "use client";
 import React, { useState } from 'react';
-import { Mail, Globe, Phone, MapPin, Building, Edit, Save, PlusCircle, BarChart2 } from 'lucide-react';
+import { PlusCircle } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 import BusinessCard from '../components/dashboard/BusinessCard';
 import QRCodeModal from '../components/link/QRCodeModal';
 import { useParams } from 'react-router-dom';
 
 const UserCorporateDashboard: React.FC = () => {
-  const { id } = useParams(); // :id olarak tanımladığımız parametreyi alır
-  const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(true);
+
 
 
   const { addToast } = useToast();
