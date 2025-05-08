@@ -29,7 +29,8 @@ export const UPDATE_USER_MUTATION = gql`
       ulke
       fotograf
       guncellemeTarihi
-      # Diğer istediğiniz alanlar
+      createdAt
+      updatedAt
     }
   }
 `;
