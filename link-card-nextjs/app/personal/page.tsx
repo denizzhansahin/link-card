@@ -1,6 +1,6 @@
 "use client";
-import React, { use, useEffect, useState } from 'react';
-import { PlusCircle, Instagram, Facebook, Twitter, AlignJustify as Spotify, Youtube, Linkedin, Globe, Book, ShoppingBag, MessageCircle, FileText } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Instagram, Facebook, Twitter, AlignJustify as Spotify, Youtube, Linkedin, Globe, Book, ShoppingBag, MessageCircle, FileText } from 'lucide-react';
 import SocialCard from '../components/dashboard/SocialCard';
 import LinkCard from '../components/dashboard/LinkCard';
 import { useToast } from '../context/ToastContext';
@@ -38,8 +38,15 @@ const PersonalDashboard: React.FC = () => {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editingValue, setEditingValue] = useState("");
 
-  const storedUser = localStorage.getItem('user');
-  const user = storedUser ? JSON.parse(storedUser) : null;
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedUser = localStorage.getItem('user');
+      setUser(storedUser ? JSON.parse(storedUser) : null);
+    }
+  }, []);
+
   console.log('User from localStorage:', user);
 
   const { data, loading, error, refetch } = useQuery(GET_PERSONAL_LINKS, {
