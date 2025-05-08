@@ -42,4 +42,35 @@ export class KurumsalLinkOlusturDto {
     @IsOptional()
     @IsString()
     isYeriEposta?: string;
+
+
+    @Field({ nullable: true })
+    @IsOptional()
+    @IsString()
+    isyeriLinkedin?: string;
+
+    @Field({ nullable: true })
+    @IsOptional()
+    @IsString()
+    isyeriTwitter?: string;
+
+    @Field({ nullable: true })
+    @IsOptional()
+    @IsString()
+    isyeriUrunKatalogu?: string;
+
+    @Field({ nullable: true })
+    @IsOptional()
+    @IsString()
+    isyeriBasinKiti?: string;
+
+    @Field({ nullable: true })
+    @IsOptional()
+    @IsString()
+    isyeriKariyerler?: string;
+
+    @Field({ nullable: true })
+    @IsOptional()
+    @IsString()
+    isyeriAdi?: string;
 }

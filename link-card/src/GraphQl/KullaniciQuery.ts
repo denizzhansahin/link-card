@@ -14,7 +14,7 @@ import { Public } from 'src/auth/decorators/public.deacorator';
 // import { Public } from 'src/auth/decorators/public.deacorator'; // Kullanılmıyor gibi
 
 @Resolver(() => Kullanici)
- // Guardları sınıf seviyesinde uygula
+// Guardları sınıf seviyesinde uygula
 export class KullaniciGraphQl {
     constructor(private kullaniciService: KullaniciService) { }
 
@@ -30,7 +30,7 @@ export class KullaniciGraphQl {
     async getKullanici(
         @Args('id', { type: () => String }) id: string, // Arg tipi Int olmalı
         @Context() ctx: any,
-    ): Promise<Kullanici | null> { // Dönüş tipi | null olarak güncellendi
+    ): Promise<Partial<Kullanici> | null> { // Dönüş tipi Partial<Kullanici> | null olarak güncellendi
         const currentUser = ctx.req.user;
 
         // Yetkilendirme: Çiftçi ise sadece kendi ID'sini sorgulayabilir
@@ -42,11 +42,11 @@ export class KullaniciGraphQl {
             const user = await this.kullaniciService.kullaniciBul(id);
             return user; // Servis zaten bulunamazsa hata fırlatmalı veya null dönmeli
         } catch (error) {
-             // Servis NotFoundException fırlatırsa null dön
-             if (error instanceof NotFoundException) {
-                 return null;
-             }
-             throw error; // Diğer hataları fırlat
+            // Servis NotFoundException fırlatırsa null dön
+            if (error instanceof NotFoundException) {
+                return null;
+            }
+            throw error; // Diğer hataları fırlat
         }
     }
 
@@ -65,14 +65,43 @@ export class KullaniciGraphQl {
         @Args('kullaniciGuncelleData') kullaniciGuncelleData: KullaniciGuncelleDto,
         @Context() ctx: any,
     ): Promise<Kullanici> {
-         const currentUser = ctx.req;
+        const currentUser = ctx.req;
 
-         // Yetkilendirme: Çiftçi ise sadece kendi ID'sini güncelleyebilir
-         if (currentUser.role === Role.KULLANICI && currentUser.id !== kullaniciId) {
-             throw new ForbiddenException('Başka bir kullanıcıyı güncelleyemezsiniz.');
-         }
+        // Yetkilendirme: Çiftçi ise sadece kendi ID'sini güncelleyebilir
+        if (currentUser.role === Role.KULLANICI && currentUser.id !== kullaniciId) {
+            throw new ForbiddenException('Başka bir kullanıcıyı güncelleyemezsiniz.');
+        }
 
         // Servis zaten bulunamazsa hata fırlatmalı
         return this.kullaniciService.kullaniciGuncelle(kullaniciId, kullaniciGuncelleData);
+    }
+
+
+
+    @Public()
+    @Query(() => Kullanici, { name: 'kullaniciBul_profil', nullable: true }) // nullable: true eklendi
+    async getNickname(
+        @Args('nickname', { type: () => String }) nickname: string, // Arg tipi Int olmalı
+
+    ): Promise<Kullanici | null> { // Dönüş tipi | null olarak güncellendi
+
+
+        try {
+            const user = await this.kullaniciService.findNickname(nickname);
+            if (!user) {
+                return null;
+            }
+            const { id, eposta, sifre, olusturmaTarihi, guncellemeTarihi, silmeTarihi, role, ...yeniUser } = user;
+            return {
+                ...yeniUser,
+                id: user.id || '', 
+            } as Kullanici;
+        } catch (error) {
+            // Servis NotFoundException fırlatırsa null dön
+            if (error instanceof NotFoundException) {
+                return null;
+            }
+            throw error; // Diğer hataları fırlat
+        }
     }
 }

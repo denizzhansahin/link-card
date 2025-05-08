@@ -1,9 +1,30 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Mail, Globe, Phone, MapPin, Building, Edit, Save, PlusCircle, BarChart2 } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 import BusinessCard from '../components/dashboard/BusinessCard';
 import QRCodeModal from '../components/link/QRCodeModal';
+import { useMutation, useQuery } from '@apollo/client';
+import { GET_CORPORATE_LINKS, UPDATE_KURUMSAL_LINK_MUTATION } from '../GraphQl/LinklerGraphQl';
+import Modal from '../components/common/Modal';
+
+
+interface KurumsalLinkGuncelleDtoInput {
+  isEpostasi?: string | null;
+  isWebSitesi?: string | null;
+  isyeriWebSitesi?: string | null;
+  isYeriAdresi?: string | null;
+  isTelefonu?: string | null;
+  isYeriTelefon?: string | null;
+  isYeriEposta?: string | null;
+
+  isyeriLinkedin?: string | null;
+  isyeriTwitter?: string | null;
+  isyeriUrunKatalogu?: string | null;
+  isyeriBasinKiti?: string | null;
+  isyeriKariyerler?: string | null;
+  isyeriAdi?: string | null;
+}
 
 const CorporateDashboard: React.FC = () => {
   const { addToast } = useToast();
@@ -11,23 +32,112 @@ const CorporateDashboard: React.FC = () => {
   const [showQRModal, setShowQRModal] = useState(false);
   const [selectedUrl, setSelectedUrl] = useState('');
 
-  const [corporateDetails, setCorporateDetails] = useState({
-    companyName: 'Acme Industries',
-    email: 'contact@acme-industries.com',
-    website: 'https://acme-industries.com',
-    businessWebsite: 'https://business.acme-industries.com',
-    officeAddress: '123 Business Park, Suite 456, Enterprise City, EC 12345',
-    phone: '+1 (555) 123-4567',
-    officePhone: '+1 (555) 987-6543',
-    officeEmail: 'office@acme-industries.com',
+
+  const [formData, setFormData] = useState<KurumsalLinkGuncelleDtoInput>({});
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingField, setEditingField] = useState<string | null>(null);
+  const [editingValue, setEditingValue] = useState("");
+
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedUser = localStorage.getItem('user');
+      setUser(storedUser ? JSON.parse(storedUser) : null);
+    }
+  }, []);
+
+
+  const { data, loading, error, refetch } = useQuery(GET_CORPORATE_LINKS, {
+    variables: { userId: user ? user.id : null },
+    skip: !user?.id,
+    fetchPolicy: 'cache-and-network',
   });
 
+  console.log('GraphQL Data 1:', data?.kullaniciBul?.kurumsalLink)
+
+
+
+
+  const [updateKurumsalselLink, { data: kurumsallLink, loading: khata, error: kserror }] = useMutation(UPDATE_KURUMSAL_LINK_MUTATION, {
+    variables: { userId: user ? user.id : null },
+  });
+
+  const handleUpdate = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!editingField) return;
+    try {
+      await updateKurumsalselLink({
+        variables: {
+          linkId: data?.kullaniciBul?.kurumsalLink.id,
+          linkData: {
+            [editingField]:
+              editingField in formData && formData[editingField as keyof KurumsalLinkGuncelleDtoInput] !== null
+                ? formData[editingField as keyof KurumsalLinkGuncelleDtoInput]
+                : data?.kullaniciBul.kurumsallLink[editingField],
+          },
+        },
+      });
+      addToast('success', `${editingField} updated successfully!`);
+      setShowEditModal(false);
+      refetch();  // <-- Refresh the query data after update
+    } catch (err) {
+      console.error(`Failed to update ${editingField}:`, err);
+      addToast('error', `Failed to update ${editingField}`);
+    }
+  };
+
+
+
+
+  const [corporateDetails, setCorporateDetails] = useState({
+    isyeriAdi: '',
+    isEpostasi: '',
+    isWebSitesi: '',
+    isyeriWebSitesi: '',
+    isYeriAdresi: '',
+    isTelefonu: '',
+    isYeriTelefon: '',
+    isYeriEposta: '',
+  });
+
+  useEffect(() => {
+    if (data?.kullaniciBul?.kurumsalLink) {
+      setCorporateDetails({
+        isyeriAdi: data.kullaniciBul.kurumsalLink.isyeriAdi || '',
+        isEpostasi: data.kullaniciBul.kurumsalLink.isEpostasi || '',
+        isWebSitesi: data.kullaniciBul.kurumsalLink.isWebSitesi || '',
+        isyeriWebSitesi: data.kullaniciBul.kurumsalLink.isyeriWebSitesi || '',
+        isYeriAdresi: data.kullaniciBul.kurumsalLink.isYeriAdresi || '',
+        isTelefonu: data.kullaniciBul.kurumsalLink.isTelefonu || '',
+        isYeriTelefon: data.kullaniciBul.kurumsalLink.isYeriTelefon || '',
+        isYeriEposta: data.kullaniciBul.kurumsalLink.isYeriEposta || '',
+      });
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (data?.kullaniciBul?.kurumsalLink) {
+      const link = data.kullaniciBul.kurumsalLink;
+      setCorporateLinks([
+        { id: 1, title: 'Company LinkedIn', url: link.isyeriLinkedin || '', field: 'isyeriLinkedin' },
+        { id: 2, title: 'Corporate Twitter', url: link.isyeriTwitter || '', field: 'isyeriTwitter' },
+        { id: 3, title: 'Product Catalog', url: link.isyeriUrunKatalogu || '', field: 'isyeriUrunKatalogu' },
+        { id: 4, title: 'Press Kit', url: link.isyeriBasinKiti || '', field: 'isyeriBasinKiti' },
+        { id: 5, title: 'Careers Page', url: link.isyeriKariyerler || '', field: 'isyeriKariyerler' },
+      ]);
+    }
+  }, [data]);
+
+
+  console.log('Ver', corporateDetails.isEpostasi)
+
   const [corporateLinks, setCorporateLinks] = useState([
-    { id: 1, title: 'Company LinkedIn', url: 'https://linkedin.com/company/acme-industries' },
-    { id: 2, title: 'Corporate Twitter', url: 'https://twitter.com/acme_industries' },
-    { id: 3, title: 'Product Catalog', url: 'https://acme-industries.com/products' },
-    { id: 4, title: 'Press Kit', url: 'https://acme-industries.com/press' },
-    { id: 5, title: 'Careers Page', url: 'https://acme-industries.com/careers' },
+    { id: 1, title: 'Company LinkedIn', url: data?.kullaniciBul?.kurumsalLink?.isyeriLinkedin, field: 'isyeriLinkedin' },
+    { id: 2, title: 'Corporate Twitter', url: data?.kullaniciBul?.kurumsalLink?.isyeriTwitter, field: 'isyeriTwitter' },
+    { id: 3, title: 'Product Catalog', url: data?.kullaniciBul?.kurumsalLink?.isyeriUrunKatalogu, field: 'isyeriUrunKatalogu' },
+    { id: 4, title: 'Press Kit', url: data?.kullaniciBul?.kurumsalLink?.isyeriBasinKiti, field: 'isyeriBasinKiti' },
+    { id: 5, title: 'Careers Page', url: data?.kullaniciBul?.kurumsalLink?.isyeriKariyerler, field: 'isyeriKariyerler' },
   ]);
 
   const analytics = {
@@ -53,21 +163,57 @@ const CorporateDashboard: React.FC = () => {
     setShowQRModal(true);
   };
 
+
+
+  /*
+  
+      useEffect(() => {
+        if (data && data.kullaniciBul?.kurumsallLink) {
+          const link = data.kullaniciBul.kurumsallLink;
+          setCorporateLinks([
+            { id: 1, title: 'Company LinkedIn', url: link.isyeriLinkedin,field:'isyeriLinked ' },
+            { id: 2, title: 'Corporate Twitter', url: link.isyeriTwitter, field:'isyeriTwitter' },
+            { id: 3, title: 'Product Catalog', url: link.isyeriUrunKatalogu, field:'isyeriUrunKatalogu' },
+            { id: 4, title: 'Press Kit', url: link.isyeriBasinKiti , field:'isyeriBasinKiti' },
+            { id: 5, title: 'Careers Page', url: link.isyeriKariyerler , field:'isyeriKariyerler' },
+          ]);
+          setCorporateDetails(
+            {
+              isyeriAdi: link.isyeriAdi,
+              isEpostasi: link.isEpostasi,
+              isWebSitesi: link.isWebSitesi,
+              isyeriWebSitesi: link.isyeriWebSitesi,
+              isYeriAdresi: link.isYeriAdresi,
+              isTelefonu: link.isTelefonu,
+              isYeriTelefon: link.isYeriTelefon,
+              isYeriEposta: link.isYeriEposta,
+            }
+          )
+        }
+      }, [data]);
+  */
+
+  const handleCardEdit = (field: string, currentValue: string | null) => {
+    setEditingField(field);
+    setEditingValue(currentValue || "");
+    setFormData(prev => ({ ...prev, [field]: currentValue || "" }));
+    setShowEditModal(true);
+  };
+
   return (
     <div className="space-y-8 pt-14">
       <div className="bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-blue-800 dark:to-cyan-700 rounded-xl shadow-lg p-8 text-white">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold">{corporateDetails.companyName}</h1>
+            <h1 className="text-3xl font-bold">Corporate Dashboard</h1>
             <p className="mt-2 opacity-90">Corporate Link Management Dashboard</p>
           </div>
           <button
             onClick={toggleEditMode}
-            className={`px-4 py-2 rounded-md border border-white/30 backdrop-blur-sm transition-all ${
-              isEditing 
-                ? 'bg-white text-blue-600 hover:bg-blue-50' 
+            className={`px-4 py-2 rounded-md border border-white/30 backdrop-blur-sm transition-all ${isEditing
+                ? 'bg-white text-blue-600 hover:bg-blue-50'
                 : 'bg-white/10 hover:bg-white/20'
-            }`}
+              }`}
           >
             {isEditing ? (
               <span className="flex items-center gap-1.5">
@@ -88,75 +234,85 @@ const CorporateDashboard: React.FC = () => {
         {/* Company Information */}
         <div className="lg:col-span-2 space-y-4">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">Company Information</h2>
-          
+
           <BusinessCard
             title="Business Email"
-            value={corporateDetails.email}
+            value={data?.kullaniciBul?.kurumsalLink?.isEpostasi ?? ''}
             type="email"
             isEditing={isEditing}
-            onEdit={() => addToast('info', 'Edit business email')}
+            onEdit={() => handleCardEdit('isEpostasi', data?.kullaniciBul?.kurumsalLink?.isEpostasi ?? null)}
             onDelete={() => addToast('info', 'Delete business email')}
-            onGenerateQR={() => handleGenerateQR(`mailto:${corporateDetails.email}`)}
+            onGenerateQR={() => handleGenerateQR(`mailto:${corporateDetails.isEpostasi}`)}
+          />
+
+          <BusinessCard
+            title="Company Name"
+            value={data?.kullaniciBul?.kurumsalLink?.isyeriAdi ?? ''}
+            type="company"
+            isEditing={isEditing}
+            onEdit={() => handleCardEdit('isyeriAdi', data?.kullaniciBul?.kurumsalLink?.isyeriAdi ?? null)}
+            onDelete={() => addToast('info', 'Delete business email')}
+            onGenerateQR={() => handleGenerateQR(`mailto:${corporateDetails.isyeriAdi}`)}
           />
 
           <BusinessCard
             title="Office Email"
-            value={corporateDetails.officeEmail}
+            value={data?.kullaniciBul?.kurumsalLink?.isYeriEposta ?? ''}
             type="email"
             isEditing={isEditing}
-            onEdit={() => addToast('info', 'Edit office email')}
+            onEdit={() => handleCardEdit('isYeriEposta', corporateDetails.isYeriEposta ?? null)}
             onDelete={() => addToast('info', 'Delete office email')}
-            onGenerateQR={() => handleGenerateQR(`mailto:${corporateDetails.officeEmail}`)}
+            onGenerateQR={() => handleGenerateQR(`mailto:${corporateDetails.isYeriEposta}`)}
           />
 
           <BusinessCard
             title="Business Website"
-            value={corporateDetails.website}
+            value={data?.kullaniciBul?.kurumsalLink?.isWebSitesi ?? ''}
             type="website"
             isEditing={isEditing}
-            onEdit={() => addToast('info', 'Edit business website')}
+            onEdit={() => handleCardEdit('isWebSitesi', corporateDetails.isWebSitesi ?? null)}
             onDelete={() => addToast('info', 'Delete business website')}
-            onGenerateQR={() => handleGenerateQR(corporateDetails.website)}
+            onGenerateQR={() => handleGenerateQR(corporateDetails.isWebSitesi ?? '')}
           />
 
           <BusinessCard
             title="Corporate Website"
-            value={corporateDetails.businessWebsite}
+            value={data?.kullaniciBul?.kurumsalLink?.isyeriWebSitesi ?? ''}
             type="website"
             isEditing={isEditing}
-            onEdit={() => addToast('info', 'Edit corporate website')}
+            onEdit={() => handleCardEdit('isyeriWebSitesi', corporateDetails.isyeriWebSitesi ?? null)}
             onDelete={() => addToast('info', 'Delete corporate website')}
-            onGenerateQR={() => handleGenerateQR(corporateDetails.businessWebsite)}
+            onGenerateQR={() => handleGenerateQR(corporateDetails.isyeriWebSitesi ?? '')}
           />
 
           <BusinessCard
             title="Office Address"
-            value={corporateDetails.officeAddress}
+            value={data?.kullaniciBul?.kurumsalLink?.isYeriAdresi ?? ''}
             type="address"
             isEditing={isEditing}
-            onEdit={() => addToast('info', 'Edit office address')}
+            onEdit={() => handleCardEdit('isYeriAdresi', corporateDetails.isYeriAdresi ?? null)}
             onDelete={() => addToast('info', 'Delete office address')}
           />
 
           <BusinessCard
             title="Business Phone"
-            value={corporateDetails.phone}
+            value={data?.kullaniciBul?.kurumsalLink?.isTelefonu ?? ''}
             type="phone"
             isEditing={isEditing}
-            onEdit={() => addToast('info', 'Edit business phone')}
+            onEdit={() => handleCardEdit('isTelefonu', corporateDetails.isTelefonu ?? null)}
             onDelete={() => addToast('info', 'Delete business phone')}
-            onGenerateQR={() => handleGenerateQR(`tel:${corporateDetails.phone}`)}
+            onGenerateQR={() => handleGenerateQR(`tel:${corporateDetails.isTelefonu}`)}
           />
 
           <BusinessCard
             title="Office Phone"
-            value={corporateDetails.officePhone}
+            value={data?.kullaniciBul?.kurumsalLink?.isYeriTelefon ?? ''}
             type="phone"
             isEditing={isEditing}
-            onEdit={() => addToast('info', 'Edit office phone')}
+            onEdit={() => handleCardEdit('isYeriTelefon', corporateDetails.isYeriTelefon ?? null)}
             onDelete={() => addToast('info', 'Delete office phone')}
-            onGenerateQR={() => handleGenerateQR(`tel:${corporateDetails.officePhone}`)}
-            
+            onGenerateQR={() => handleGenerateQR(`tel:${corporateDetails.isYeriTelefon}`)}
+
           />
         </div>
 
@@ -164,28 +320,20 @@ const CorporateDashboard: React.FC = () => {
         <div className="lg:col-span-1">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">Corporate Links</h2>
-            {isEditing && (
-              <button 
-                onClick={handleAddLink}
-                className="flex items-center gap-1.5 text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
-              >
-                <PlusCircle className="w-4 h-4" />
-                Add Link
-              </button>
-            )}
+
           </div>
-          
+
           <div className="space-y-4">
             {corporateLinks.map((link) => (
               <BusinessCard
                 key={link.id}
                 title={link.title}
-                value={link.url}
+                value={link.url ?? ''}
                 type="website"
                 isEditing={isEditing}
-                onEdit={() => addToast('info', `Edit ${link.title}`)}
+                onEdit={() => handleCardEdit(link.field.replace(' ', ''), link.url ?? null)}
                 onDelete={() => addToast('info', `Delete ${link.title}`)}
-                onGenerateQR={() => handleGenerateQR(link.url)}
+                onGenerateQR={() => handleGenerateQR(link.url ?? '')}
               />
             ))}
           </div>
@@ -198,6 +346,32 @@ const CorporateDashboard: React.FC = () => {
           url={selectedUrl}
           onClose={() => setShowQRModal(false)}
         />
+      )}
+
+      {/* Edit Modal */}
+      {showEditModal && (
+        <Modal
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          title={`Edit ${editingField}`}
+        >
+          <form onSubmit={handleUpdate} className="space-y-4">
+            <input
+              type="text"
+              value={editingValue}
+              onChange={(e) => {
+                setEditingValue(e.target.value);
+                if (editingField) {
+                  setFormData(prev => ({ ...prev, [editingField]: e.target.value }));
+                }
+              }}
+              className="w-full p-2 border rounded"
+            />
+            <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">
+              Save
+            </button>
+          </form>
+        </Modal>
       )}
 
     </div>

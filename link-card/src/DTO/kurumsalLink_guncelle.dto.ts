@@ -24,4 +24,22 @@ export class KurumsalLinkGuncelleDto extends PartialType(KurumsalLinkOlusturDto)
 
     @Field({ nullable: true })
     isYeriEposta?: string;
+
+    @Field({ nullable: true })
+    isyeriTwitter?: string;
+
+    @Field({ nullable: true })
+    isyeriLinkedin?: string;
+
+    @Field({ nullable: true })
+    isyeriUrunKatalogu?: string;
+
+    @Field({ nullable: true })
+    isyeriBasinKiti?: string;
+
+    @Field({ nullable: true })
+    isyeriKariyerler?: string;
+
+    @Field({ nullable: true })
+    isyeriAdi?: string;
 }

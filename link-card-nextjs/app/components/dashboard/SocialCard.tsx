@@ -11,8 +11,9 @@ interface SocialCardProps {
   icon: React.ReactNode;
   isEditing: boolean | undefined;
   onEdit: () => void;
-  onDelete: () => void;
+  onDelete: () => void | undefined;
   onGenerateQR?: () => void;
+  allowDelete?: boolean; // NEW optional prop
 }
 
 const SocialCard: React.FC<SocialCardProps> = ({
@@ -23,7 +24,8 @@ const SocialCard: React.FC<SocialCardProps> = ({
   isEditing,
   onEdit,
   onDelete,
-  onGenerateQR
+  onGenerateQR,
+  allowDelete
 }) => {
   const { addToast } = useToast();
 
@@ -86,13 +88,15 @@ const SocialCard: React.FC<SocialCardProps> = ({
                 <Edit className="w-4 h-4" />
                 Edit
               </button>
-              <button
-                onClick={onDelete}
-                className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-colors"
-              >
-                <Trash2 className="w-4 h-4" />
-                Delete
-              </button>
+              {allowDelete && (
+                <button
+                  onClick={onDelete}
+                  className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete
+                </button>
+              )}
             </div>
           ) : (
             <div className="flex items-center gap-2">

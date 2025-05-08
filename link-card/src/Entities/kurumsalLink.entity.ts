@@ -48,4 +48,28 @@ export class KurumsalLink {
     @Field()
     @UpdateDateColumn()
     guncellemeTarihi: Date;
+
+    @Field({ nullable: true })
+    @Column({ nullable: true })
+    isyeriLinkedin: string;
+
+    @Field({ nullable: true })
+    @Column({ nullable: true })
+    isyeriTwitter: string;
+
+    @Field({ nullable: true })
+    @Column({ nullable: true })
+    isyeriUrunKatalogu: string;
+
+    @Field({ nullable: true })
+    @Column({ nullable: true })
+    isyeriBasinKiti: string;
+
+    @Field({ nullable: true })
+    @Column({ nullable: true })
+    isyeriKariyerler: string;
+
+    @Field({ nullable: true })
+    @Column({ nullable: true })
+    isyeriAdi: string;
 }

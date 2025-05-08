@@ -48,6 +48,12 @@ type KurumsalLink {
   kullanici: Kullanici
   olusturmaTarihi: DateTime!
   guncellemeTarihi: DateTime!
+  isyeriLinkedin: String
+  isyeriTwitter: String
+  isyeriUrunKatalogu: String
+  isyeriBasinKiti: String
+  isyeriKariyerler: String
+  isyeriAdi: String
 }
 
 type Kullanici {
@@ -71,6 +77,7 @@ type Kullanici {
 type Query {
   kullanicilar: [Kullanici!]!
   kullaniciBul(id: String!): Kullanici
+  kullaniciBul_profil(nickname: String!): Kullanici
   getLinkById(id: String!): Link!
   getAllLinks: [Link!]!
   getKisiselLinkById(id: String!): KisiselLink!
@@ -172,6 +179,12 @@ input KurumsalLinkOlusturDto {
   isTelefonu: String
   isYeriTelefon: String
   isYeriEposta: String
+  isyeriLinkedin: String
+  isyeriTwitter: String
+  isyeriUrunKatalogu: String
+  isyeriBasinKiti: String
+  isyeriKariyerler: String
+  isyeriAdi: String
 }
 
 input KurumsalLinkGuncelleDto {
@@ -182,4 +195,10 @@ input KurumsalLinkGuncelleDto {
   isTelefonu: String
   isYeriTelefon: String
   isYeriEposta: String
+  isyeriTwitter: String
+  isyeriLinkedin: String
+  isyeriUrunKatalogu: String
+  isyeriBasinKiti: String
+  isyeriKariyerler: String
+  isyeriAdi: String
 }

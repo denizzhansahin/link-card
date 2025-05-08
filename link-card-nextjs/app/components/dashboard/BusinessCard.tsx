@@ -7,11 +7,12 @@ import { useToast } from '../../context/ToastContext';
 interface BusinessCardProps {
   title: string;
   value: string;
-  type: 'email' | 'website' | 'phone' | 'address';
+  type: 'email' | 'website' | 'phone' | 'address' | 'company';
   isEditing: boolean;
   onEdit: () => void;
   onDelete: () => void;
   onGenerateQR?: () => void;
+  allowDelete?: boolean; // NEW optional prop
 }
 
 const BusinessCard: React.FC<BusinessCardProps> = ({
@@ -21,7 +22,8 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
   isEditing,
   onEdit,
   onDelete,
-  onGenerateQR
+  onGenerateQR,
+  allowDelete
 }) => {
   const { addToast } = useToast();
 
@@ -31,6 +33,7 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
       case 'website': return <Globe className="w-5 h-5" />;
       case 'phone': return <Phone className="w-5 h-5" />;
       case 'address': return <MapPin className="w-5 h-5" />;
+      case 'company': return <Building className="w-5 h-5" />;
       default: return <Building className="w-5 h-5" />;
     }
   };
@@ -41,6 +44,7 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
       case 'website': return 'text-indigo-600 dark:text-indigo-400';
       case 'phone': return 'text-green-600 dark:text-green-400';
       case 'address': return 'text-red-600 dark:text-red-400';
+      case 'company': return 'text-gray-600 dark:text-gray-400';
       default: return 'text-gray-600 dark:text-gray-400';
     }
   };
@@ -83,13 +87,15 @@ const BusinessCard: React.FC<BusinessCardProps> = ({
                 >
                   <Edit className="w-4 h-4" />
                 </button>
-                <button
-                  onClick={onDelete}
-                  className="p-2 rounded-lg text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30 transition-colors"
-                  aria-label="Delete"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                {allowDelete && (  // only show delete if allowDelete === true
+                  <button
+                    onClick={onDelete}
+                    className="p-2 rounded-lg text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30 transition-colors"
+                    aria-label="Delete"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
               </>
             ) : (
               <>

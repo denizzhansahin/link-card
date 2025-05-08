@@ -12,6 +12,7 @@ interface LinkCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onGenerateQR: () => void;
+  allowDelete?: boolean; // NEW optional prop
 }
 
 const LinkCard: React.FC<LinkCardProps> = ({
@@ -21,7 +22,8 @@ const LinkCard: React.FC<LinkCardProps> = ({
   isEditing,
   onEdit,
   onDelete,
-  onGenerateQR
+  onGenerateQR,
+  allowDelete
 }) => {
   const { addToast } = useToast();
 
@@ -60,13 +62,16 @@ const LinkCard: React.FC<LinkCardProps> = ({
               >
                 <Edit className="w-4 h-4" />
               </button>
-              <button
-                onClick={onDelete}
-                className="p-1.5 rounded-md text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30 transition-colors"
-                aria-label="Delete link"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
+              {/* Delete button only rendered if allowDelete is true */}
+              {allowDelete && (
+                <button
+                  onClick={onDelete}
+                  className="p-1.5 rounded-md text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30 transition-colors"
+                  aria-label="Delete link"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              )}
             </>
           ) : (
             <>

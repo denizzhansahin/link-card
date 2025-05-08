@@ -47,6 +47,12 @@ export const GET_CORPORATE_LINKS = gql`
         olusturmaTarihi
         guncellemeTarihi
   
+        isyeriLinkedin
+        isyeriTwitter
+        isyeriUrunKatalogu
+        isyeriBasinKiti
+        isyeriKariyerler
+        isyeriAdi
       }
     }
   }
@@ -121,6 +127,13 @@ export const CREATE_KURUMSAL_LINK_MUTATION = gql`
         id
         nickname
       }
+
+      isyeriLinkedin
+      isyeriTwitter
+      isyeriUrunKatalogu
+      isyeriBasinKiti
+      isyeriKariyerler
+      isyeriAdi
     }
   }
 `;
@@ -141,6 +154,78 @@ export const UPDATE_KURUMSAL_LINK_MUTATION = gql`
         id
         nickname
       }
+
+      isyeriLinkedin
+      isyeriTwitter
+      isyeriUrunKatalogu
+      isyeriBasinKiti
+      isyeriKariyerler
+      isyeriAdi
     }
   }
 `;
+
+
+export const GET_KISISEL_LINK = gql`
+query GetKisiselLinkByNickname($userNickname: String!) {
+  kullaniciBul_profil(nickname: $userNickname) {
+  nickname
+    isim
+    soyisim
+    kisiselLink {
+      id
+      instagram
+      facebook
+      x
+      spotify
+      youtube
+      linkedin
+      reddit
+      vk
+      medium
+      webSite
+      favoriMuzikVideom
+      youtubeList
+      youtubeVideo
+      blogSitem
+      spotifyList
+      alisverisListem
+    }
+  }
+}
+`
+
+
+export const GET_KURUMSAL_LINK = gql`
+query GetKurumsalLinkByNickname($userNickname: String!) {
+  kullaniciBul_profil(nickname: $userNickname) {
+    # İsterseniz kullanıcıyla ilgili diğer bilgileri de alabilirsiniz
+    nickname
+    isim
+    soyisim
+    kurumsalLink {
+      id
+      isEpostasi
+      isWebSitesi
+      isyeriWebSitesi
+      isYeriAdresi
+      isTelefonu
+      isYeriTelefon
+      isYeriEposta
+      isyeriLinkedin
+      isyeriTwitter
+      isyeriUrunKatalogu
+      isyeriBasinKiti
+      isyeriKariyerler
+      isyeriAdi
+      olusturmaTarihi
+      guncellemeTarihi
+      # Eğer kurumsal linkin bağlı olduğu kullanıcıyı tekrar almak isterseniz:
+      # kullanici {
+      #   id
+      #   nickname
+      # }
+    }
+  }
+}
+`

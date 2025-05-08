@@ -12,6 +12,10 @@ import { LocalStrategy } from './strategy/local.strategy';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { Kullanici } from 'src/Entities/kullanici.entity';
 import { KullaniciService } from 'src/kullanici/kullanici.service';
+import { LinkIslemlerService } from 'src/link_islemler/link_islemler.service';
+import { KisiselLink } from 'src/Entities/kisiselLink.entity';
+import { KurumsalLink } from 'src/Entities/kurumsalLink.entity';
+import { Link } from 'src/Entities/kisalink.entity';
 
 
 @Module({
@@ -21,9 +25,9 @@ import { KullaniciService } from 'src/kullanici/kullanici.service';
     ConfigModule.forFeature(refreshJwtConfig),
     PassportModule,
     JwtModule.registerAsync(jwtConfig.asProvider()),
-    TypeOrmModule.forFeature([Kullanici]),
+    TypeOrmModule.forFeature([Kullanici,KisiselLink,KurumsalLink,Link]),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy, KullaniciService],
+  providers: [AuthService, LocalStrategy, JwtStrategy, KullaniciService,LinkIslemlerService],
   controllers: [AuthController],
 })
 export class AuthModule {}

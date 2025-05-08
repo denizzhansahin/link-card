@@ -4,7 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { KullaniciGuncelleDto } from 'src/DTO/kullanici_guncelle.dto';
 import { KullaniciOlusturDto } from 'src/DTO/kullanici_olustur.dto';
 import { Kullanici } from 'src/Entities/kullanici.entity';
-
+import { KisiselLink } from 'src/Entities/kisiselLink.entity'; // NEW import
+import { KurumsalLink } from 'src/Entities/kurumsalLink.entity'; // NEW import
 
 import { Repository } from 'typeorm';
 
@@ -12,12 +13,26 @@ import { Repository } from 'typeorm';
 export class KullaniciService {
     constructor(
         @InjectRepository(Kullanici) private kullaniciRepository: Repository<Kullanici>,
+        @InjectRepository(KisiselLink) private kisiselLinkRepository: Repository<KisiselLink>, // NEW
+        @InjectRepository(KurumsalLink) private kurumsalLinkRepository: Repository<KurumsalLink>, // NEW
     ) { }
 
     // Yeni kullanıcı oluştur
     async kullaniciOlustur(kullaniciData: KullaniciOlusturDto) {
         const newUser = this.kullaniciRepository.create(kullaniciData);
-        return await this.kullaniciRepository.save(newUser); 
+        
+        // Create empty personal link and corporate link entries
+        const newKisiselLink = this.kisiselLinkRepository.create({}); // empty initial data
+        const savedKisiselLink = await this.kisiselLinkRepository.save(newKisiselLink);
+        
+        const newKurumsalLink = this.kurumsalLinkRepository.create({}); // empty initial data
+        const savedKurumsalLink = await this.kurumsalLinkRepository.save(newKurumsalLink);
+        
+        // Associate the created links with the new user
+        newUser.kisiselLink = savedKisiselLink;
+        newUser.kurumsalLink = savedKurumsalLink;
+        
+        return await this.kullaniciRepository.save(newUser);
     }
 
     // Tüm kullanıcıları getir
@@ -43,6 +58,17 @@ export class KullaniciService {
           where:{
             eposta:eposta,
           }
+        })
+      }
+
+
+      async findNickname(nickname:string){
+        return await this.kullaniciRepository.findOne({
+          where:{
+            nickname:nickname,
+          },
+          relations: ['linkler','kisiselLink','kurumsalLink'
+          ]
         })
       }
 

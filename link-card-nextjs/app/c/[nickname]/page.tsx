@@ -1,13 +1,30 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PlusCircle } from 'lucide-react';
-import { useToast } from '../context/ToastContext';
-import BusinessCard from '../components/dashboard/BusinessCard';
-import QRCodeModal from '../components/link/QRCodeModal';
+import { useToast } from '../../context/ToastContext';
+import BusinessCard from '../../components/dashboard/BusinessCard';
+import QRCodeModal from '../../components/link/QRCodeModal';
 import { useParams } from 'react-router-dom';
 
-const UserCorporateDashboard: React.FC = () => {
 
+import { useQuery } from '@apollo/client';
+import { GET_KURUMSAL_LINK } from '@/app/GraphQl/LinklerGraphQl';
+
+interface Props {
+  params: Promise<{ nickname: string }>; // or as appropriate
+}
+
+
+const UserCorporateDashboard = ({ params }: Props) => {
+  const { nickname } = React.use(params);
+
+   const { data, loading, error, refetch } = useQuery(GET_KURUMSAL_LINK, {
+        variables: { userNickname: nickname ? nickname : null },
+        skip: !nickname,
+        fetchPolicy: 'cache-and-network',
+      });
+    
+      console.log('GraphQL Data 1:', data);
 
 
   const { addToast } = useToast();
@@ -16,32 +33,51 @@ const UserCorporateDashboard: React.FC = () => {
   const [selectedUrl, setSelectedUrl] = useState('');
 
   const [corporateDetails, setCorporateDetails] = useState({
-    companyName: 'Acme Industries',
-    email: 'contact@acme-industries.com',
-    website: 'https://acme-industries.com',
-    businessWebsite: 'https://business.acme-industries.com',
-    officeAddress: '123 Business Park, Suite 456, Enterprise City, EC 12345',
-    phone: '+1 (555) 123-4567',
-    officePhone: '+1 (555) 987-6543',
-    officeEmail: 'office@acme-industries.com',
+    companyName: '',
+    email: '',
+    website: '',
+    businessWebsite: '',
+    officeAddress: '',
+    phone: '',
+    officePhone: '',
+    officeEmail: '',
   });
 
-  const [corporateLinks, setCorporateLinks] = useState([
-    { id: 1, title: 'Company LinkedIn', url: 'https://linkedin.com/company/acme-industries' },
-    { id: 2, title: 'Corporate Twitter', url: 'https://twitter.com/acme_industries' },
-    { id: 3, title: 'Product Catalog', url: 'https://acme-industries.com/products' },
-    { id: 4, title: 'Press Kit', url: 'https://acme-industries.com/press' },
-    { id: 5, title: 'Careers Page', url: 'https://acme-industries.com/careers' },
-  ]);
+  interface CorporateLink {
+    id: number;
+    title: string;
+    url: string;
+    field: string;
+  }
 
-  const analytics = {
-    totalVisits: 12483,
-    monthlyGrowth: '+15.3%',
-    topPerformer: 'Product Catalog',
-    conversionRate: '3.7%',
-  };
+  const [corporateLinks, setCorporateLinks] = useState<CorporateLink[]>([]);
+
+  useEffect(() => {
+    if (data?.kullaniciBul_profil?.kurumsalLink) {
+      const link = data.kullaniciBul_profil.kurumsalLink;
+      setCorporateDetails({
+        companyName: link.isyeriAdi || '',
+        email: link.isEpostasi || '',
+        website: link.isWebSitesi || '',
+        businessWebsite: link.isyeriWebSitesi || '',
+        officeAddress: link.isYeriAdresi || '',
+        phone: link.isTelefonu || '',
+        officePhone: link.isYeriTelefon || '',
+        officeEmail: link.isYeriEposta || '',
+      });
+      setCorporateLinks([
+        { id: 1, title: 'Company LinkedIn', url: link.isyeriLinkedin || '', field: 'isyeriLinkedin' },
+        { id: 2, title: 'Corporate Twitter', url: link.isyeriTwitter || '', field: 'isyeriTwitter' },
+        { id: 3, title: 'Product Catalog', url: link.isyeriUrunKatalogu || '', field: 'isyeriUrunKatalogu' },
+        { id: 4, title: 'Press Kit', url: link.isyeriBasinKiti || '', field: 'isyeriBasinKiti' },
+        { id: 5, title: 'Careers Page', url: link.isyeriKariyerler || '', field: 'isyeriKariyerler' },
+      ]);
+    }
+  }, [data]);
 
 
+  console.log('Corporate Details:', corporateDetails);
+  console.log('Corporate Links:', corporateLinks);
 
   const handleAddLink = () => {
     addToast('info', 'This feature will allow you to add a new corporate link');
@@ -57,8 +93,10 @@ const UserCorporateDashboard: React.FC = () => {
       <div className="bg-gradient-to-r from-blue-600 to-cyan-500 dark:from-blue-800 dark:to-cyan-700 rounded-xl shadow-lg p-8 text-white">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold">{corporateDetails.companyName}</h1>
-            <p className="mt-2 opacity-90">Corporate Link Management Dashboard</p>
+            <h1 className="text-3xl font-bold">{data?.kullaniciBul_profil?.isim} {data?.kullaniciBul_profil?.soyisim}  @{nickname}</h1>
+            <p className="mt-2 opacity-90">
+            {data?.kullaniciBul_profil?.kurumsalLink?.isyeriAdi}
+            </p>
           </div>
 
         </div>
@@ -71,47 +109,47 @@ const UserCorporateDashboard: React.FC = () => {
           
           <BusinessCard
             title="Business Email"
-            value={corporateDetails.email}
+            value={data?.kullaniciBul_profil?.kurumsalLink?.isEpostasi}
             type="email"
             isEditing={false}
             onEdit={() => addToast('info', 'Edit business email')}
             onDelete={() => addToast('info', 'Delete business email')}
-            onGenerateQR={() => handleGenerateQR(`mailto:${corporateDetails.email}`)}
+            onGenerateQR={() => handleGenerateQR(`mailto:${data?.kullaniciBul_profil?.kurumsalLink?.isEpostasi}`)}
           />
 
           <BusinessCard
             title="Office Email"
-            value={corporateDetails.officeEmail}
+            value={data?.kullaniciBul_profil?.kurumsalLink?.isYeriEposta}
             type="email"
             isEditing={false}
             onEdit={() => addToast('info', 'Edit office email')}
             onDelete={() => addToast('info', 'Delete office email')}
-            onGenerateQR={() => handleGenerateQR(`mailto:${corporateDetails.officeEmail}`)}
+            onGenerateQR={() => handleGenerateQR(`mailto:${data?.kullaniciBul_profil?.kurumsalLink?.isYeriEposta}`)}
           />
 
           <BusinessCard
             title="Business Website"
-            value={corporateDetails.website}
+            value={data?.kullaniciBul_profil?.kurumsalLink?.isWebSitesi}
             type="website"
             isEditing={false}
             onEdit={() => addToast('info', 'Edit business website')}
             onDelete={() => addToast('info', 'Delete business website')}
-            onGenerateQR={() => handleGenerateQR(corporateDetails.website)}
+            onGenerateQR={() => handleGenerateQR(data?.kullaniciBul_profil?.kurumsalLink?.isWebSitesi)}
           />
 
           <BusinessCard
             title="Corporate Website"
-            value={corporateDetails.businessWebsite}
+            value={data?.kullaniciBul_profil?.kurumsalLink?.isyeriWebSitesi}
             type="website"
             isEditing={false}
             onEdit={() => addToast('info', 'Edit corporate website')}
             onDelete={() => addToast('info', 'Delete corporate website')}
-            onGenerateQR={() => handleGenerateQR(corporateDetails.businessWebsite)}
+            onGenerateQR={() => handleGenerateQR(data?.kullaniciBul_profil?.kurumsalLink?.isyeriWebSitesi)}
           />
 
           <BusinessCard
             title="Office Address"
-            value={corporateDetails.officeAddress}
+            value={data?.kullaniciBul_profil?.kurumsalLink?.isYeriAdresi}
             type="address"
             isEditing={false}
             onEdit={() => addToast('info', 'Edit office address')}
@@ -120,22 +158,22 @@ const UserCorporateDashboard: React.FC = () => {
 
           <BusinessCard
             title="Business Phone"
-            value={corporateDetails.phone}
+            value={data?.kullaniciBul_profil?.kurumsalLink?.isTelefonu}
             type="phone"
             isEditing={false}
             onEdit={() => addToast('info', 'Edit business phone')}
             onDelete={() => addToast('info', 'Delete business phone')}
-            onGenerateQR={() => handleGenerateQR(`tel:${corporateDetails.phone}`)}
+            onGenerateQR={() => handleGenerateQR(`tel:${data?.kullaniciBul_profil?.kurumsalLink?.isTelefonu}`)}
           />
 
           <BusinessCard
             title="Office Phone"
-            value={corporateDetails.officePhone}
+            value={data?.kullaniciBul_profil?.kurumsalLink?.isYeriTelefon}
             type="phone"
             isEditing={false}
             onEdit={() => addToast('info', 'Edit office phone')}
             onDelete={() => addToast('info', 'Delete office phone')}
-            onGenerateQR={() => handleGenerateQR(`tel:${corporateDetails.officePhone}`)}
+            onGenerateQR={() => handleGenerateQR(`tel:${data?.kullaniciBul_profil?.kurumsalLink?.isYeriTelefon}`)}
             
           />
         </div>
@@ -144,15 +182,7 @@ const UserCorporateDashboard: React.FC = () => {
         <div className="lg:col-span-1">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">Corporate Links</h2>
-            {isEditing && (
-              <button 
-                onClick={handleAddLink}
-                className="flex items-center gap-1.5 text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
-              >
-                <PlusCircle className="w-4 h-4" />
-                Add Link
-              </button>
-            )}
+
           </div>
           
           <div className="space-y-4">

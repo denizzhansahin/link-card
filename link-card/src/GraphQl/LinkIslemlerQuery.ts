@@ -14,6 +14,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/auth/enums/role.enum';
+import { Public } from 'src/auth/decorators/public.deacorator';
 
 @Resolver()
 export class LinkIslemlerGraphQl { // Sınıf adını dosya adına göre değiştirebilirsiniz (LinkIslemlerResolver)
@@ -136,7 +137,7 @@ export class LinkIslemlerGraphQl { // Sınıf adını dosya adına göre değiş
 
     // Get a single KisiselLink by ID
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.ADMIN,Role.KULLANICI)
+    @Roles(Role.ADMIN)
     @Query(() => KisiselLink, { name: 'getKisiselLinkById' })
     async getKisiselLinkById(@Args('id', { type: () => String }) id: string): Promise<KisiselLink> {
         return this.linkIslemlerService.getKisiselLinkById(id);
@@ -152,7 +153,7 @@ export class LinkIslemlerGraphQl { // Sınıf adını dosya adına göre değiş
 
     // Get a single KurumsalLink by ID
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.ADMIN,Role.KULLANICI)
+    @Roles(Role.ADMIN)
     @Query(() => KurumsalLink, { name: 'getKurumsalLinkById' })
     async getKurumsalLinkById(@Args('id', { type: () => Number }) id: number): Promise<KurumsalLink> {
         return this.linkIslemlerService.getKurumsalLinkById(id);

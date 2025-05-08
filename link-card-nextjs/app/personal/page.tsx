@@ -57,6 +57,9 @@ const PersonalDashboard: React.FC = () => {
 
   console.log('GraphQL Data 1:', data);
 
+
+
+
   
 
   const [updateKisiselLink, { data: kisiselLink, loading: kshata, error: kserror }] = useMutation(UPDATE_KISISEL_LINK_MUTATION, {
