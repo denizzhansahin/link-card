@@ -147,3 +147,91 @@ mutation KullaniciyiGuncelle($userId: String!, $updateData: KullaniciGuncelleDto
     "fotograf": "adminnnn"
   }
 }
+
+
+
+
+
+
+
+
+////////////////////////////////////////////
+// LinklerGraphQl.ts (veya .js)
+
+import { gql } from '@apollo/client';
+
+export const GET_USER_PERSONAL_LINKS = gql`
+  query GetUserPersonalLinks($userId: String!) {
+    kullaniciBul(id: $userId) {
+      id # Kullanıcı ID'si
+      nickname
+      kisiselLink { # Bu önemli, KisiselLink objesini çekiyoruz
+        id # KisiselLink'in kendi ID'si
+        instagram
+        facebook
+        x
+        spotify
+        youtube
+        linkedin
+        reddit
+        vk
+        medium
+        webSite
+        favoriMuzikVideom
+        youtubeList
+        youtubeVideo
+        blogSitem
+        spotifyList
+        alisverisListem
+      }
+    }
+  }
+`;
+
+export const CREATE_KISISEL_LINK_MUTATION = gql`
+  mutation KisiselLinkOlustur($linkData: KisiselLinkOlusturDto!) {
+    kisiselLinkOlustur(kisiselLinkData: $linkData) {
+      id
+      instagram
+      facebook
+      x
+      spotify
+      youtube
+      linkedin
+      reddit
+      vk
+      medium
+      webSite
+      favoriMuzikVideom
+      youtubeList
+      youtubeVideo
+      blogSitem
+      spotifyList
+      alisverisListem
+    }
+  }
+`;
+
+export const UPDATE_KISISEL_LINK_MUTATION = gql`
+  mutation KisiselLinkGuncelle($linkId: String!, $linkData: KisiselLinkGuncelleDto!) {
+    kisiselLinkGuncelle(id: $linkId, kisiselLinkData: $linkData) {
+      id
+      instagram
+      facebook
+      x
+      spotify
+      youtube
+      linkedin
+      reddit
+      vk
+      medium
+      webSite
+      favoriMuzikVideom
+      youtubeList
+      youtubeVideo
+      blogSitem
+      spotifyList
+      alisverisListem
+    }
+  }
+`;

@@ -42,8 +42,8 @@ const LoginPage: React.FC = () => {
       localStorage.setItem('refreshToken', data.userData.refreshToken);
 
       // Save user data to Redux and localStorage
-      dispatch(setKullanici(data.reqUser.user));
-      localStorage.setItem('user', JSON.stringify(data.reqUser.user));
+      dispatch(setKullanici(data.reqUser.userWithoutPassword));
+      localStorage.setItem('user', JSON.stringify(data.reqUser.userWithoutPassword));
 
       // Redirect based on role
       if (data.reqUser.role === 'ADMIN') {

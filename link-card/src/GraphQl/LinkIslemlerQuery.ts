@@ -41,7 +41,7 @@ export class LinkIslemlerGraphQl { // Sınıf adını dosya adına göre değiş
 
         if (currentUser.role === Role.KULLANICI) {
             const sahipId = kisaLink.kullanici?.id; // Kısa linkin sahibi ID'si
-            if (!sahipId || sahipId !== currentUser.sub) {
+            if (!sahipId || sahipId !== currentUser.id) {
                 throw new ForbiddenException("Bu uyarıyı görme yetkiniz yok.");
             }
         }
@@ -57,7 +57,7 @@ export class LinkIslemlerGraphQl { // Sınıf adını dosya adına göre değiş
         const currentUser = ctx.req.user;
         if (currentUser.role === Role.KULLANICI) {
             const sahipId = kisiselLinkData?.kullaniciId; // Kısa linkin sahibi ID'si
-            if (!sahipId || sahipId !== currentUser.sub) {
+            if (!sahipId || sahipId !== currentUser.id) {
                 throw new ForbiddenException("Bu uyarıyı görme yetkiniz yok.");
             }
         }
@@ -77,7 +77,7 @@ export class LinkIslemlerGraphQl { // Sınıf adını dosya adına göre değiş
 
         if (currentUser.role === Role.KULLANICI) {
             const sahipId = kisiselLink.kullanici?.id; // Kısa linkin sahibi ID'si
-            if (!sahipId || sahipId !== currentUser.sub) {
+            if (!sahipId || sahipId !== currentUser.id) {
                 throw new ForbiddenException("Bu uyarıyı görme yetkiniz yok.");
             }
         }
@@ -91,7 +91,7 @@ export class LinkIslemlerGraphQl { // Sınıf adını dosya adına göre değiş
         const currentUser = ctx.req.user;
         if (currentUser.role === Role.KULLANICI) {
             const sahipId = kurumsalLinkData?.kullaniciId; // Kısa linkin sahibi ID'si
-            if (!sahipId || sahipId !== currentUser.sub) {
+            if (!sahipId || sahipId !== currentUser.id) {
                 throw new ForbiddenException("Bu uyarıyı görme yetkiniz yok.");
             }
         }
@@ -111,7 +111,7 @@ export class LinkIslemlerGraphQl { // Sınıf adını dosya adına göre değiş
 
         if (currentUser.role === Role.KULLANICI) {
             const sahipId = kurumsalLink.kullanici?.id; // Kısa linkin sahibi ID'si
-            if (!sahipId || sahipId !== currentUser.sub) {
+            if (!sahipId || sahipId !== currentUser.id) {
                 throw new ForbiddenException("Bu uyarıyı görme yetkiniz yok.");
             }
         }

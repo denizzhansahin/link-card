@@ -56,10 +56,15 @@ function ReduxInitializer({ children }: { children: React.ReactNode }) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // Sayfa yüklendiğinde localStorage'dan kullanıcı bilgilerini al ve Redux'a yükle
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
-      dispatch(setKullanici(JSON.parse(storedUser)));
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        console.log("Parsed User:", parsedUser);
+        dispatch(setKullanici(parsedUser));
+      } catch (error) {
+        console.error("Failed to parse stored user:", error);
+      }
     }
   }, [dispatch]);
 
