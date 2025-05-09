@@ -28,8 +28,13 @@ Giriş için ise remember me kaldır, forget password için bir sayfa ekle(bir G
 Footer için ise:
 sosyal medya linklerini ekle, Space Teknopoli sayfasına yönlendirme ekle
 
+Link kısaltma işine bak, unique olarak eklenecek, bunu backend'de bak
+link kısaltma için ise wp, mesaj, facebook, twitter paylaşma özelliği ekle
+
 Personal Dashboard için ise:
 Kullanıcıya ait kısa linkleri göster, QR kod paylaşma, panoya kopyalama, wp, mesaj, facebook, twitter paylaşma özelliği ekle seçeneği olsun
 
-Link kısaltma işine bak, unique olarak eklenecek, bunu backend'de bak
-link kısaltma için ise wp, mesaj, facebook, twitter paylaşma özelliği ekle
+rastgele kişisel link, kurumsal link, kısa link getirme
+bir oyun ile 2048 tarzında rastgele link getirme
+
+unutulan şifre yenileme ekranı oluştur
