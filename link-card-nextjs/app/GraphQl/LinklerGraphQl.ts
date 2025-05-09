@@ -172,6 +172,7 @@ query GetKisiselLinkByNickname($userNickname: String!) {
   nickname
     isim
     soyisim
+    fotograf
     kisiselLink {
       id
       instagram
@@ -203,6 +204,7 @@ query GetKurumsalLinkByNickname($userNickname: String!) {
     nickname
     isim
     soyisim
+    fotograf
     kurumsalLink {
       id
       isEpostasi

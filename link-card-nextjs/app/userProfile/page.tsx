@@ -4,6 +4,7 @@ import {
   UserCog, Save, Loader2,
   KeyRound, ShieldCheck, ImageUp, UserCircle, Trash2, Eye, EyeOff, AtSign, MapPin, Fingerprint
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useToast } from '../context/ToastContext';
 // import QRCodeModal from '../components/link/QRCodeModal'; // Yorum satırı
 import { useMutation, gql } from '@apollo/client'; // gql import edildi
@@ -30,6 +31,9 @@ export const UPDATE_USER_MUTATION = gql`
 const PersonalDashboard: React.FC = () => {
   const { addToast } = useToast();
   const [user, setUser] = useState<any>(null);
+
+  const router = useRouter();
+
   
   const [userFormData, setUserFormData] = useState({
     isim: '',
@@ -76,8 +80,7 @@ const PersonalDashboard: React.FC = () => {
           addToast('error', 'Kullanıcı verileri okunamadı.');
         }
       } else {
-        addToast('error', 'Lütfen giriş yapınız.');
-        // router.push('/login');
+        router.push('/login');
       }
     }
   }, [addToast]);

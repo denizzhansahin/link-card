@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect } from 'react';
-import { X, Download } from 'lucide-react';
+import { X, Download, Copy } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 import { useToast } from '../../context/ToastContext';
 
@@ -40,6 +40,15 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({ url, onClose }) => {
     window.addEventListener('keydown', handleEsc);
     return () => window.removeEventListener('keydown', handleEsc);
   }, [onClose]);
+
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      addToast('success', 'Link copied to clipboard!');
+    } catch (error) {
+      addToast('error', 'Failed to copy link');
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -85,6 +94,15 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({ url, onClose }) => {
               >
                 <Download className="h-4 w-4 mr-2" />
                 Download QR Code
+              </button>
+
+              <button
+                onClick={copyToClipboard}
+                className="mt-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                aria-label="Copy link"
+              >
+                <Copy className="w-5 h-5" />
+                Copy To Clipboard
               </button>
             </div>
           </div>

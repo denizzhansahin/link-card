@@ -9,6 +9,9 @@ import { useMutation, useQuery } from '@apollo/client';
 import { GET_PERSONAL_LINKS, UPDATE_KISISEL_LINK_MUTATION } from '../GraphQl/LinklerGraphQl';
 import Modal from '../components/common/Modal';
 
+import { useRouter } from 'next/navigation';
+
+
 interface KisiselLinkGuncelleDtoInput {
   instagram?: string | null;
   facebook?: string | null;
@@ -38,12 +41,28 @@ const PersonalDashboard: React.FC = () => {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editingValue, setEditingValue] = useState("");
 
+  const router = useRouter();
+
+
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const storedUser = localStorage.getItem('user');
-      setUser(storedUser ? JSON.parse(storedUser) : null);
+
+      if (storedUser) {
+        try {
+          setUser(storedUser ? JSON.parse(storedUser) : null);
+
+        } catch (error) {
+          console.error("Failed to parse user from localStorage:", error);
+          addToast('error', 'Kullanıcı verileri okunamadı.');
+        }
+      } else {
+        router.push('/login');
+      }
+
+
     }
   }, []);
 
@@ -60,7 +79,7 @@ const PersonalDashboard: React.FC = () => {
 
 
 
-  
+
 
   const [updateKisiselLink, { data: kisiselLink, loading: kshata, error: kserror }] = useMutation(UPDATE_KISISEL_LINK_MUTATION, {
     variables: { userId: user ? user.id : null },
@@ -113,7 +132,7 @@ const PersonalDashboard: React.FC = () => {
   const toggleEditMode = () => {
     setIsEditing(!isEditing);
     if (isEditing) {
-      addToast('success', 'Changes saved successfully!');
+      addToast('success', 'Edit Mode Off!');
     }
   };
 
@@ -132,7 +151,7 @@ const PersonalDashboard: React.FC = () => {
   const [socialLinks, setSocialLinks] = useState([
     { id: 1, platform: 'instagram', username: data?.kullaniciBul?.kisiselLink?.instagram, url: `https://instagram.com/${data?.kullaniciBul?.kisiselLink?.instagram}` },
     { id: 2, platform: 'facebook', username: data?.kullaniciBul?.kisiselLink?.facebook, url: `https://facebook.com/${data?.kullaniciBul?.kisiselLink?.facebook}` },
-    { id: 3, platform: 'twitter', username: data?.kullaniciBul?.kisiselLink?.x, url: `https://x.com/${data?.kullaniciBul?.kisiselLink?.x}`},
+    { id: 3, platform: 'twitter', username: data?.kullaniciBul?.kisiselLink?.x, url: `https://x.com/${data?.kullaniciBul?.kisiselLink?.x}` },
     { id: 4, platform: 'spotify', username: data?.kullaniciBul?.kisiselLink?.spotify, url: `https://open.spotify.com/user/${data?.kullaniciBul?.kisiselLink?.spotify}` },
     { id: 5, platform: 'youtube', username: data?.kullaniciBul?.kisiselLink?.youtube, url: `https://youtube.com/@${data?.kullaniciBul?.kisiselLink?.youtube}` },
     { id: 6, platform: 'linkedin', username: data?.kullaniciBul?.kisiselLink?.linkedin, url: `https://linkedin.com/in/${data?.kullaniciBul?.kisiselLink?.linkedin}` },
@@ -186,17 +205,29 @@ const PersonalDashboard: React.FC = () => {
               <h1 className="text-3xl font-bold">Personal Dashboard</h1>
               <p className="mt-2 opacity-90">Manage all your personal links in one place</p>
             </div>
-            <button
+            <div className="flex flex-col space-y-2">
+              <button
               onClick={toggleEditMode}
-              className={`px-4 py-2 rounded-md border border-white/30 backdrop-blur-sm transition-all ${
-                isEditing 
-                  ? 'bg-white text-pink-600 hover:bg-pink-50' 
-                  : 'bg-white/10 hover:bg-white/20'
-              }`}
-            >
+              className={`px-4 py-2 rounded-md border border-white/30 backdrop-blur-sm transition-all ${isEditing
+                ? 'bg-white text-pink-600 hover:bg-pink-50'
+                : 'bg-white/10 hover:bg-white/20'
+                }`}
+              >
               {isEditing ? 'Save Changes' : 'Edit Dashboard'}
-            </button>
+              </button>
+              <button
+              onClick={() => handleGenerateQR(`http://localhost:3000/p/${user?.nickname}`)}
+              className={`px-4 py-2 rounded-md border border-white/30 backdrop-blur-sm transition-all ${isEditing
+                ? 'bg-white text-pink-600 hover:bg-pink-50'
+                : 'bg-white/10 hover:bg-white/20'
+                }`}
+              >
+              Share Me
+              </button>
+            </div>
           </div>
+          
+        
         </div>
 
         {/* Social Media Links - Windows 8 Style */}
@@ -205,7 +236,7 @@ const PersonalDashboard: React.FC = () => {
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">Social Media</h2>
 
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {socialLinks.map((link) => (
               <SocialCard
@@ -216,7 +247,7 @@ const PersonalDashboard: React.FC = () => {
                 icon={getPlatformIcon(link.platform)}
                 isEditing={isEditing}
                 onEdit={() => handleCardEdit(
-                  link.platform.toLowerCase() === 'twitter' ? 'x' : link.platform.toLowerCase(), 
+                  link.platform.toLowerCase() === 'twitter' ? 'x' : link.platform.toLowerCase(),
                   link.username
                 )}
                 onDelete={() => addToast('info', `Delete ${link.platform} link`)}
@@ -232,15 +263,14 @@ const PersonalDashboard: React.FC = () => {
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">Custom Links</h2>
 
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows">
             {customLinks.map((link) => (
               <div
                 key={link.id}
-                className={`${
-                  link.size === 'large' ? 'sm:col-span-2 sm:row-span-2' :
+                className={`${link.size === 'large' ? 'sm:col-span-2 sm:row-span-2' :
                   link.size === 'medium' ? 'sm:col-span-2' : ''
-                }`}
+                  }`}
               >
                 <LinkCard
                   title={link.title}
@@ -249,12 +279,12 @@ const PersonalDashboard: React.FC = () => {
                   isEditing={isEditing}
                   onEdit={() => handleCardEdit(
                     link.title === 'Personal Website' ? 'webSite' :
-                    link.title === 'Favorite Music Video' ? 'favoriMuzikVideom' :
-                    link.title === 'YouTube Playlist' ? 'youtubeList' :
-                    link.title === 'Latest Video' ? 'youtubeVideo' :
-                    link.title === 'Blog' ? 'blogSitem' :
-                    link.title === 'Spotify Playlist' ? 'spotifyList' :
-                    link.title === 'Shopping List' ? 'alisverisListem' : '',
+                      link.title === 'Favorite Music Video' ? 'favoriMuzikVideom' :
+                        link.title === 'YouTube Playlist' ? 'youtubeList' :
+                          link.title === 'Latest Video' ? 'youtubeVideo' :
+                            link.title === 'Blog' ? 'blogSitem' :
+                              link.title === 'Spotify Playlist' ? 'spotifyList' :
+                                link.title === 'Shopping List' ? 'alisverisListem' : '',
                     link.url
                   )}
                   onDelete={() => addToast('info', `Delete ${link.title}`)}

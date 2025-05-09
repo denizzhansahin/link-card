@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, UserCircle } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
 import BusinessCard from '../../components/dashboard/BusinessCard';
 import QRCodeModal from '../../components/link/QRCodeModal';
@@ -18,13 +18,15 @@ interface Props {
 const UserCorporateDashboard = ({ params }: Props) => {
   const { nickname } = React.use(params);
 
-   const { data, loading, error, refetch } = useQuery(GET_KURUMSAL_LINK, {
-        variables: { userNickname: nickname ? nickname : null },
-        skip: !nickname,
-        fetchPolicy: 'cache-and-network',
-      });
-    
-      console.log('GraphQL Data 1:', data);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+
+  const { data, loading, error, refetch } = useQuery(GET_KURUMSAL_LINK, {
+    variables: { userNickname: nickname ? nickname : null },
+    skip: !nickname,
+    fetchPolicy: 'cache-and-network',
+  });
+
+  console.log('GraphQL Data 1:', data);
 
 
   const { addToast } = useToast();
@@ -55,6 +57,12 @@ const UserCorporateDashboard = ({ params }: Props) => {
   useEffect(() => {
     if (data?.kullaniciBul_profil?.kurumsalLink) {
       const link = data.kullaniciBul_profil.kurumsalLink;
+
+      if (data.kullaniciBul_profil?.fotograf) {
+        setPreviewImage(data.kullaniciBul_profil?.fotograf);
+      }
+
+
       setCorporateDetails({
         companyName: link.isyeriAdi || '',
         email: link.isEpostasi || '',
@@ -95,9 +103,30 @@ const UserCorporateDashboard = ({ params }: Props) => {
           <div>
             <h1 className="text-3xl font-bold">{data?.kullaniciBul_profil?.isim} {data?.kullaniciBul_profil?.soyisim}  @{nickname}</h1>
             <p className="mt-2 opacity-90">
-            {data?.kullaniciBul_profil?.kurumsalLink?.isyeriAdi}
+              {data?.kullaniciBul_profil?.kurumsalLink?.isyeriAdi}
             </p>
           </div>
+          <div className="mt-4 sm:mt-0 relative flex flex-col items-center group">
+            {previewImage ? (
+              <img
+                src={previewImage}
+                alt="Profil Fotoğrafı"
+                className="h-40 w-40 object-cover rounded-full border-4 border-white/50 group-hover:border-white transition-all duration-300 shadow-lg"
+              />
+            ) : (
+              <UserCircle className="h-40 w-40 text-white/50 group-hover:text-white transition-all duration-300" />
+            )}
+
+            <button
+              onClick={() => handleGenerateQR(`http://localhost:3000/c/${data?.kullaniciBul_profil?.nickname}`)}
+              className={`mt-4 px-4 py-2 rounded-md border border-white/30 backdrop-blur-sm transition-all 
+                         bg-white/10 hover:bg-white/20
+                        }`}
+            >
+              Share Me
+            </button>
+          </div>
+
 
         </div>
       </div>
@@ -106,7 +135,7 @@ const UserCorporateDashboard = ({ params }: Props) => {
         {/* Company Information */}
         <div className="lg:col-span-2 space-y-4">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">Company Information</h2>
-          
+
           <BusinessCard
             title="Business Email"
             value={data?.kullaniciBul_profil?.kurumsalLink?.isEpostasi}
@@ -174,7 +203,7 @@ const UserCorporateDashboard = ({ params }: Props) => {
             onEdit={() => addToast('info', 'Edit office phone')}
             onDelete={() => addToast('info', 'Delete office phone')}
             onGenerateQR={() => handleGenerateQR(`tel:${data?.kullaniciBul_profil?.kurumsalLink?.isYeriTelefon}`)}
-            
+
           />
         </div>
 
@@ -184,7 +213,7 @@ const UserCorporateDashboard = ({ params }: Props) => {
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">Corporate Links</h2>
 
           </div>
-          
+
           <div className="space-y-4">
             {corporateLinks.map((link) => (
               <BusinessCard

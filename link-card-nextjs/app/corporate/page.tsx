@@ -9,6 +9,9 @@ import { GET_CORPORATE_LINKS, UPDATE_KURUMSAL_LINK_MUTATION } from '../GraphQl/L
 import Modal from '../components/common/Modal';
 
 
+import { useRouter } from 'next/navigation';
+
+
 interface KurumsalLinkGuncelleDtoInput {
   isEpostasi?: string | null;
   isWebSitesi?: string | null;
@@ -32,6 +35,8 @@ const CorporateDashboard: React.FC = () => {
   const [showQRModal, setShowQRModal] = useState(false);
   const [selectedUrl, setSelectedUrl] = useState('');
 
+    const router = useRouter();
+  
 
   const [formData, setFormData] = useState<KurumsalLinkGuncelleDtoInput>({});
   const [showEditModal, setShowEditModal] = useState(false);
@@ -40,13 +45,29 @@ const CorporateDashboard: React.FC = () => {
 
   const [user, setUser] = useState<any>(null);
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const storedUser = localStorage.getItem('user');
-      setUser(storedUser ? JSON.parse(storedUser) : null);
-    }
-  }, []);
 
+    useEffect(() => {
+      if (typeof window !== 'undefined') {
+        const storedUser = localStorage.getItem('user');
+  
+        if (storedUser) {
+          try {
+            setUser(storedUser ? JSON.parse(storedUser) : null);
+            
+          } catch (error) {
+            console.error("Failed to parse user from localStorage:", error);
+            addToast('error', 'Kullanıcı verileri okunamadı.');
+          }
+        } else {
+          router.push('/login');
+        }
+  
+        
+      }
+    }, []);
+
+
+    
 
   const { data, loading, error, refetch } = useQuery(GET_CORPORATE_LINKS, {
     variables: { userId: user ? user.id : null },
@@ -150,7 +171,7 @@ const CorporateDashboard: React.FC = () => {
   const toggleEditMode = () => {
     setIsEditing(!isEditing);
     if (isEditing) {
-      addToast('success', 'Corporate details updated successfully!');
+      addToast('success', 'Edit Mode Off!');
     }
   };
 
@@ -208,6 +229,9 @@ const CorporateDashboard: React.FC = () => {
             <h1 className="text-3xl font-bold">Corporate Dashboard</h1>
             <p className="mt-2 opacity-90">Corporate Link Management Dashboard</p>
           </div>
+
+          <div className="flex flex-col space-y-2">
+
           <button
             onClick={toggleEditMode}
             className={`px-4 py-2 rounded-md border border-white/30 backdrop-blur-sm transition-all ${isEditing
@@ -227,6 +251,19 @@ const CorporateDashboard: React.FC = () => {
               </span>
             )}
           </button>
+          <button
+              onClick={() => handleGenerateQR(`http://localhost:3000/c/${user?.nickname}`)}
+              className={`px-4 py-2 rounded-md border border-white/30 backdrop-blur-sm transition-all ${isEditing
+                ? 'bg-white text-pink-600 hover:bg-pink-50'
+                : 'bg-white/10 hover:bg-white/20'
+                }`}
+              >
+              Share Me
+              </button>
+          </div>
+
+
+
         </div>
       </div>
 
