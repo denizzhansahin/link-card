@@ -20,9 +20,4 @@ iş epostası, iş web sitesi, işyeri web sitesi, iş yeri adresi, iş telefonu
 YAPILACAKLAR:
 
 
-rastgele kişisel link, kurumsal link, kısa link getirme
 bir oyun ile 2048 tarzında rastgele link getirme
-
-
-en son:
-unutulan şifre yenileme ekranı oluştur

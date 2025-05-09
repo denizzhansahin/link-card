@@ -1,5 +1,10 @@
 import { gql } from '@apollo/client';
 
+export const RandomNickname = gql`
+query {
+  getRandomNickname
+}`
+
 export const CREATE_USER_MUTATION = gql`
   mutation YeniKullaniciOlustur($userData: KullaniciOlusturDto!) {
     kullaniciOlustur(kullaniciData: $userData) {
@@ -15,7 +20,6 @@ export const CREATE_USER_MUTATION = gql`
     }
   }
 `;
-
 
 export const UPDATE_USER_MUTATION = gql`
   mutation KullaniciGuncelle($kullaniciId: String!, $kullaniciGuncelleData: KullaniciGuncelleDto!) {

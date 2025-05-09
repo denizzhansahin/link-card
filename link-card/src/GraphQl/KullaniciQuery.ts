@@ -104,4 +104,11 @@ export class KullaniciGraphQl {
             throw error; // Diğer hataları fırlat
         }
     }
+
+    // New Query to get random nickname
+    @Public()
+    @Query(() => String, { name: 'getRandomNickname' })
+    async getRandomNickname(): Promise<string> {
+        return await this.kullaniciService.getRandomNickname();
+    }
 }

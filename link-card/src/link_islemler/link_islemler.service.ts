@@ -222,4 +222,14 @@ export class LinkIslemlerService {
     async getAllKurumsalLinks(): Promise<KurumsalLink[]> {
         return this.kurumsalLinkRepository.find({ relations: ['kullanici'] });
     }
+
+    // New function: returns a random user's nickname from the database
+    async getRandomLink(): Promise<string> {
+        const users = await this.linkRepository.find();
+        if (!users.length) {
+            throw new Error("No user found");
+        }
+        const randomIndex = Math.floor(Math.random() * users.length);
+        return users[randomIndex].kisaltmaToken;
+    }
 }

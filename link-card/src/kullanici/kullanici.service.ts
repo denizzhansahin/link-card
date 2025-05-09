@@ -83,4 +83,14 @@ export class KullaniciService {
 
         return await this.kullaniciRepository.save(kullanici);
     }
+    
+    // New function: returns a random user's nickname from the database
+    async getRandomNickname(): Promise<string> {
+        const users = await this.kullaniciRepository.find();
+        if (!users.length) {
+            throw new Error("No user found");
+        }
+        const randomIndex = Math.floor(Math.random() * users.length);
+        return users[randomIndex].nickname;
+    }
 }

@@ -78,6 +78,7 @@ type Query {
   kullanicilar: [Kullanici!]!
   kullaniciBul(id: String!): Kullanici
   kullaniciBul_profil(nickname: String!): Kullanici
+  getRandomNickname: String!
   getLinkById(id: String!): Link!
   getLinkByIdShortUrl(kisaltmaToken: String!): Link!
   getAllLinks: [Link!]!
@@ -85,6 +86,7 @@ type Query {
   getAllKisiselLinks: [KisiselLink!]!
   getKurumsalLinkById(id: Float!): KurumsalLink!
   getAllKurumsalLinks: [KurumsalLink!]!
+  getRandomLink: String!
 }
 
 type Mutation {

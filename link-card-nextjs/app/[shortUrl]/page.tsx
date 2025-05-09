@@ -7,11 +7,11 @@ import { GET_KISA_LINK } from '../GraphQl/LinklerGraphQl'; // Your GraphQL query
 import { ArrowPathIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline'; // Optional icons
 
 interface PageProps {
-  params: { shortUrl: string };
+  params: Promise<{ shortUrl: string }>;
 }
 
 const RedirectPage: React.FC<PageProps> = ({ params }) => {
-  const { shortUrl } = params;
+   const { shortUrl } = React.use(params);
   const [countdown, setCountdown] = useState(10); // Corrected initial countdown
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);

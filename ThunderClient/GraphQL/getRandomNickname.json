@@ -1,0 +1,11 @@
+{
+  "url": "http://localhost:3000/graphql",
+  "method": "POST",
+  "headers": [
+    { "name": "Content-Type", "value": "application/json" }
+  ],
+  "body": {
+    "mode": "raw",
+    "raw": "{\n  \"query\": \"query { getRandomNickname }\"\n}"
+  }
+}

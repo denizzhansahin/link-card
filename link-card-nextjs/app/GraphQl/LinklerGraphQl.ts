@@ -1,6 +1,11 @@
 import { gql } from '@apollo/client';
 
 
+export const getRandomLink = gql`
+query {
+  getRandomLink
+}`
+
 export const GET_PERSONAL_KISA_LINK = gql`
 query GetKullaniciLinkleriById($kullaniciId: String!) {
   kullaniciBul(id: $kullaniciId) {

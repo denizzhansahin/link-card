@@ -1,10 +1,14 @@
 "use client";
 import React, { useState } from 'react';
-import { Copy, QrCode, MessageCircle, MessageSquare,   Check, Link as LinkIcon, Globe, User } from 'lucide-react';
+import { Copy, QrCode, MessageCircle, MessageSquare, Check, Link as LinkIcon, Globe, User } from 'lucide-react';
 import LinkShorteningForm from "./components/link/LinkShorteningForm";
 import QRCodeModal from "./components/link/QRCodeModal";
 import { useToast } from "./context/ToastContext";
 import Link from "next/link";
+
+import { RandomNickname } from './GraphQl/KullaniciGraphQl';
+import { getRandomLink } from './GraphQl/LinklerGraphQl';
+import { useQuery } from '@apollo/client';
 
 export default function Home() {
   const [showQRModal, setShowQRModal] = useState(false);
@@ -17,9 +21,23 @@ export default function Home() {
     addToast('success', 'Link shortened successfully!');
   };
 
+
+  const { data, loading, error, refetch } = useQuery(RandomNickname, {
+    fetchPolicy: 'cache-and-network',
+  });
+
+  console.log('GraphQL Data 1:', data?.getRandomNickname);
+
+
+  const { data : randomLink } = useQuery(getRandomLink, {
+    fetchPolicy: 'cache-and-network',
+  });
+
+  console.log('GraphQL Data 2:', randomLink?.getRandomLink);
+
   const copyToClipboard = () => {
     if (!shortenedUrl) return;
-    
+
     navigator.clipboard.writeText(shortenedUrl)
       .then(() => {
         setCopiedLink(true);
@@ -65,21 +83,21 @@ export default function Home() {
       <section className="relative overflow-hidden py-20 sm:py-32">
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/20 dark:to-purple-950/30 -z-10" />
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2064')] bg-no-repeat bg-cover opacity-[0.03] -z-10" />
-        
+
         <div className="relative mx-auto max-w-3xl text-center">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 text-transparent bg-clip-text">
             Share More <br className="hidden sm:block" />
             With Less
           </h1>
           <p className="mt-6 text-lg sm:text-xl text-gray-600 dark:text-gray-300">
-            Shorten, customize, and share your links with our powerful platform. 
+            Shorten, customize, and share your links with our powerful platform.
             Create memorable URLs that stand out and track their performance.
           </p>
-          
+
           {/* Link shortening form */}
           <div className="mt-10 max-w-2xl mx-auto">
             <LinkShorteningForm onLinkShortened={handleLinkShortened} />
-            
+
             {/* Shortened URL display */}
             {shortenedUrl && (
               <div className="mt-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 backdrop-blur-sm">
@@ -112,7 +130,7 @@ export default function Home() {
                     </button>
 
                     {/* --- YENİ PAYLAŞIM BUTONLARI BAŞLANGICI --- */}
-                    
+
                     {/* WhatsApp */}
                     <a
                       href={`https://wa.me/?text=${encodeURIComponent('Şu harika linke göz atın: ' + shortenedUrl)}`}
@@ -123,7 +141,7 @@ export default function Home() {
                       title="Share on WhatsApp"
                     >
                       {/* WhatsApp için Lucide ikonu veya kendi SVG'niz */}
-                      <MessageCircle className="h-5 w-5 text-green-500" /> 
+                      <MessageCircle className="h-5 w-5 text-green-500" />
                     </a>
 
                     {/* Twitter (X) */}
@@ -155,7 +173,7 @@ export default function Home() {
                         <path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12Z" clipRule="evenodd"></path>
                       </svg>
                     </a>
-                    
+
                     {/* SMS (Mesaj) */}
                     <a
                       // Not: `sms:` davranışı cihaza göre değişir. iOS için `&body=`, Android için `?body=`. `?&body=` her ikisini de kapsamaya çalışır.
@@ -191,7 +209,7 @@ export default function Home() {
               A complete solution for creating, managing, and sharing your online presence.
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {features.map((feature, index) => (
               <div
@@ -219,24 +237,24 @@ export default function Home() {
       <section className="py-16 bg-gradient-to-r from-blue-600 to-sky-500 dark:from-blue-700 dark:to-sky-600 rounded-xl shadow-lg">
         <div className="mx-auto max-w-5xl px-6 text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-white">
-            Hadi Biraz Eğlenelim Mi?
+            Let's Have Some Fun, Shall We?
           </h2>
           <p className="mt-4 text-lg text-blue-100 dark:text-sky-100"> {/* Hafif mavi tonu */}
-            Rastgele Kullanıcı veya Kısa Linkler ile Karşılaşmak İster Misiniz?
+            Do You Want to Meet Random Users or Short Links?
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/personal"
+              href={`/p/${data?.getRandomNickname}`}
               className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-semibold rounded-lg text-blue-700 bg-white hover:bg-blue-50 dark:text-blue-600 dark:hover:bg-sky-50 transition-colors shadow-md hover:shadow-lg"
             >
-              Personal Dashboard
+              Get User
               <User className="ml-2 h-5 w-5" />
             </Link>
             <Link
-              href="/corporate"
+             href={`/${randomLink?.getRandomLink}`}
               className="inline-flex items-center justify-center px-6 py-3 border border-white/80 dark:border-sky-300/70 text-base font-semibold rounded-lg text-white hover:bg-white/10 dark:hover:bg-sky-500/30 transition-colors shadow-md hover:shadow-lg"
             >
-              Corporate Dashboard
+              Get Link
               <Globe className="ml-2 h-5 w-5" />
             </Link>
           </div>

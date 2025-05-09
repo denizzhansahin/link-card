@@ -173,4 +173,10 @@ export class LinkIslemlerGraphQl { // Sınıf adını dosya adına göre değiş
     async getAllKurumsalLinks(): Promise<KurumsalLink[]> {
         return this.linkIslemlerService.getAllKurumsalLinks();
     }
+
+    @Public()
+    @Query(() => String, { name: 'getRandomLink' })
+    async getRandomLink(): Promise<string> {
+        return await this.linkIslemlerService.getRandomLink();
+    }
 }
