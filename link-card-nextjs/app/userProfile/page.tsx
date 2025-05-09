@@ -77,7 +77,7 @@ const PersonalDashboard: React.FC = () => {
           }
         } catch (error) {
           console.error("Failed to parse user from localStorage:", error);
-          addToast('error', 'Kullanıcı verileri okunamadı.');
+          addToast('error', 'Could not read user data.');
         }
       } else {
         router.push('/login');
@@ -88,7 +88,7 @@ const PersonalDashboard: React.FC = () => {
 
   const [updateUserMutation, { loading: updatingUserGraphQL, error: updateGraphQLError }] = useMutation(UPDATE_USER_MUTATION, {
     onCompleted: (data) => {
-      addToast('success', 'Kullanıcı bilgileri başarıyla güncellendi!');
+      addToast('success', 'User information updated successfully!');
       if (user && data.kullaniciGuncelle) {
         const updatedBackendData = data.kullaniciGuncelle;
         // ÖNEMLİ: Backend'den dönen güncel verilerle localStorage ve user state'ini güncelle
@@ -116,7 +116,7 @@ const PersonalDashboard: React.FC = () => {
       setIsSubmitting(false);
     },
     onError: (err) => {
-      addToast('error', `GraphQL Güncelleme Hatası: ${err.message}`);
+      addToast('error', `GraphQL Update Error: ${err.message}`);
       console.error("Update user GraphQL error:", err);
       setIsSubmitting(false);
     }
@@ -132,7 +132,7 @@ const PersonalDashboard: React.FC = () => {
       const file = e.target.files[0];
       // Dosya boyutu kontrolü (örneğin 2MB)
       if (file.size > 5 * 1024 * 1024) {
-          addToast('error', 'Dosya boyutu 2MB\'den büyük olamaz.');
+          addToast('error', 'File size cannot exceed 2MB.');
           return;
       }
       const reader = new FileReader();
@@ -152,24 +152,24 @@ const PersonalDashboard: React.FC = () => {
   const removeProfileImage = () => {
     setUserFormData(prev => ({ ...prev, fotograf: '' }));
     setPreviewImage(null);
-    addToast('info', 'Profil fotoğrafı kaldırıldı. Değişiklikleri kaydetmeyi unutmayın.');
+    addToast('info', 'Profile photo has been removed. Don\'t forget to save changes.');
   };
 
   const handleUserUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !user.id || !user.eposta) {
-      addToast('error', 'Kullanıcı bilgileri eksik. Lütfen tekrar giriş yapın.');
+      addToast('error', 'User information is incomplete. Please log in again.');
       return;
     }
 
     if (!mevcutSifreDogrulama) {
-      addToast('warning', 'Değişiklikleri onaylamak için mevcut şifrenizi girmeniz gerekmektedir.');
+      addToast('warning', 'You must enter your current password to confirm the changes.');
       return;
     }
 
     // Yeni şifre girilmişse ve 6 karakterden kısaysa uyarı
     if (userFormData.sifre && userFormData.sifre.length < 6) {
-      addToast('warning', 'Yeni şifre en az 6 karakter olmalıdır.');
+      addToast('warning', 'The new password must be at least 6 characters.');
       return;
     }
 
@@ -190,8 +190,8 @@ const PersonalDashboard: React.FC = () => {
 
       if (!response.ok) {
         // Genellikle 401 Unauthorized döner
-        const errorData = await response.json().catch(() => ({ message: 'Bilinmeyen doğrulama hatası.' }));
-        addToast('error', `Mevcut şifre yanlış veya doğrulama başarısız: ${errorData.message || response.statusText}`);
+        const errorData = await response.json().catch(() => ({ message: 'Unknown verification error.' }));
+        addToast('error', `Current password is incorrect or verification failed: ${errorData.message || response.statusText}`);
         setIsSubmitting(false);
         return;
       }
@@ -229,7 +229,7 @@ const PersonalDashboard: React.FC = () => {
 
     } catch (error: any) {
       // Bu genellikle fetch network hatası için
-      addToast('error', `Bir hata oluştu: ${error.message}`);
+      addToast('error', `An error occurred: ${error.message}`);
       console.error("Error during update process:", error);
       setIsSubmitting(false);
     }
@@ -239,7 +239,7 @@ const PersonalDashboard: React.FC = () => {
     return (
       <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
         <Loader2 className="h-12 w-12 animate-spin text-pink-500" />
-        <p className="mt-4 text-lg text-gray-700 dark:text-gray-300">Kullanıcı bilgileri yükleniyor...</p>
+        <p className="mt-4 text-lg text-gray-700 dark:text-gray-300">Loading user information...</p>
       </div>
     );
   }
@@ -251,9 +251,9 @@ const PersonalDashboard: React.FC = () => {
           <header className="mb-10 p-6 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-600 dark:from-pink-700 dark:via-purple-700 dark:to-indigo-800 rounded-xl shadow-2xl text-white">
             <div className="flex flex-col sm:flex-row justify-between items-center">
               <div className="text-center sm:text-left">
-                <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Panelim</h1>
+                <h1 className="text-3xl md:text-4xl font-bold tracking-tight">My Panel</h1>
                 <p className="mt-1 sm:mt-2 opacity-80 text-sm sm:text-base">
-                  Profil bilgilerinizi ve ayarlarınızı buradan yönetin.
+                  Manage your profile information and settings here.
                 </p>
               </div>
               <div className="mt-4 sm:mt-0 relative group">
@@ -282,7 +282,7 @@ const PersonalDashboard: React.FC = () => {
               
               <fieldset className="border-t border-gray-200 dark:border-gray-700 pt-6">
                 <legend className="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
-                  <UserCircle className="mr-2 h-6 w-6 text-indigo-500" /> Profil Fotoğrafı
+                  <UserCircle className="mr-2 h-6 w-6 text-indigo-500" /> Profile Photo
                 </legend>
                 <div className="flex flex-col sm:flex-row items-center gap-6">
                   {previewImage ? (
@@ -295,49 +295,49 @@ const PersonalDashboard: React.FC = () => {
                   <div className="flex-grow space-y-3">
                     <input type="file" id="fotograf-input" name="fotograf-input" accept="image/png, image/jpeg, image/webp" onChange={handleFileChange} ref={fileInputRef} className="hidden"/>
                     <button type="button" onClick={triggerFileInputClick} className="w-full sm:w-auto flex items-center justify-center px-4 py-2.5 border border-indigo-500 text-indigo-500 dark:border-indigo-400 dark:text-indigo-400 rounded-md text-sm font-medium hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-colors">
-                      <ImageUp className="mr-2 h-5 w-5" /> Fotoğraf Değiştir
+                      <ImageUp className="mr-2 h-5 w-5" /> Change Photo
                     </button>
                     {previewImage && (
                         <button type="button" onClick={removeProfileImage} className="w-full sm:w-auto flex items-center justify-center px-4 py-2.5 border border-red-500 text-red-500 dark:border-red-400 dark:text-red-400 rounded-md text-sm font-medium hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">
-                          <Trash2 className="mr-2 h-5 w-5" /> Fotoğrafı Kaldır
+                          <Trash2 className="mr-2 h-5 w-5" /> Remove Photo
                         </button>
                     )}
-                    <p className="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, WEBP (Max 5MB). En iyi sonuç için 1:1 kare resim.</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, WEBP (Max 5MB). 1:1 square image for best result.</p>
                   </div>
                 </div>
               </fieldset>
 
               <fieldset className="border-t border-gray-200 dark:border-gray-700 pt-6">
                 <legend className="text-lg font-semibold text-gray-800 dark:text-white mb-6 flex items-center">
-                  <UserCog className="mr-2 h-6 w-6 text-pink-500" /> Kişisel Bilgiler
+                  <UserCog className="mr-2 h-6 w-6 text-pink-500" /> Personal Information
                 </legend>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
                   <div>
-                    <label htmlFor="isim" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">İsim</label>
+                    <label htmlFor="isim" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
                     <div className="relative"><div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"><UserCircle className="h-5 w-5 text-gray-400" /></div>
                       <input type="text" name="isim" id="isim" value={userFormData.isim} onChange={handleInputChange} placeholder="Adınız" className="form-input pl-10" />
                     </div>
                   </div>
                   <div>
-                    <label htmlFor="soyisim" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Soyisim</label>
+                    <label htmlFor="soyisim" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Surname</label>
                      <div className="relative"><div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"><UserCircle className="h-5 w-5 text-gray-400" /></div>
                         <input type="text" name="soyisim" id="soyisim" value={userFormData.soyisim} onChange={handleInputChange} placeholder="Soyadınız" className="form-input pl-10" />
                     </div>
                   </div>
                   <div className="md:col-span-2">
-                    <label htmlFor="nickname" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kullanıcı Adı (Nickname)</label>
+                    <label htmlFor="nickname" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nickname</label>
                     <div className="relative"><div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"><AtSign className="h-5 w-5 text-gray-400" /></div>
                         <input type="text" name="nickname" id="nickname" value={userFormData.nickname} onChange={handleInputChange} placeholder="benzersiz_kullanici_adiniz" className="form-input pl-10" />
                     </div>
                   </div>
                   <div className="md:col-span-2">
-                    <label htmlFor="eposta" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">E-posta (Değiştirilemez)</label>
+                    <label htmlFor="eposta" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email (Cannot be changed)</label>
                     <div className="relative"><div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"><AtSign className="h-5 w-5 text-gray-400" /></div>
                         <input type="email" name="eposta" id="eposta" value={userFormData.eposta} readOnly placeholder="eposta@adresiniz.com" className="form-input pl-10 bg-gray-100 dark:bg-gray-700 cursor-not-allowed" />
                     </div>
                   </div>
                   <div className="md:col-span-2">
-                    <label htmlFor="ulke" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ülke</label>
+                    <label htmlFor="ulke" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Country</label>
                      <div className="relative"><div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"><MapPin className="h-5 w-5 text-gray-400" /></div>
                         <input type="text" name="ulke" id="ulke" value={userFormData.ulke} onChange={handleInputChange} placeholder="Yaşadığınız Ülke" className="form-input pl-10" />
                     </div>
@@ -347,11 +347,11 @@ const PersonalDashboard: React.FC = () => {
 
               <fieldset className="border-t border-gray-200 dark:border-gray-700 pt-6">
                 <legend className="text-lg font-semibold text-gray-800 dark:text-white mb-6 flex items-center">
-                  <ShieldCheck className="mr-2 h-6 w-6 text-green-500" /> Güvenlik ve Şifre Onayı
+                  <ShieldCheck className="mr-2 h-6 w-6 text-green-500" /> Security and Password Confirmation
                 </legend>
                 <div className="space-y-6">
                   <div> {/* Mevcut Şifre (Doğrulama İçin) */}
-                    <label htmlFor="mevcutSifreDogrulama" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Mevcut Şifre (Onay İçin)</label>
+                    <label htmlFor="mevcutSifreDogrulama" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current Password (For Confirmation)</label>
                     <div className="relative">
                         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"><KeyRound className="h-5 w-5 text-gray-400" /></div>
                         <input 
@@ -368,10 +368,10 @@ const PersonalDashboard: React.FC = () => {
                             {showMevcutSifre ? <EyeOff className="h-5 w-5"/> : <Eye className="h-5 w-5"/>}
                         </button>
                     </div>
-                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Herhangi bir bilgiyi değiştirmek için mevcut şifrenizi girmeniz gereklidir.</p>
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">To change any information, you must enter your current password.</p>
                   </div>
                   <div> {/* Yeni Şifre */}
-                    <label htmlFor="sifre" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Yeni Şifre (İsteğe Bağlı)</label>
+                    <label htmlFor="sifre" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">New Password (Optional)</label>
                     <div className="relative">
                         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"><Fingerprint className="h-5 w-5 text-gray-400" /></div>
                         <input 
@@ -387,7 +387,7 @@ const PersonalDashboard: React.FC = () => {
                             {showYeniSifre ? <EyeOff className="h-5 w-5"/> : <Eye className="h-5 w-5"/>}
                         </button>
                     </div>
-                     <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Şifrenizi değiştirmek istemiyorsanız bu alanı boş bırakın.</p>
+                     <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">If you do not want to change your password, leave this field blank.</p>
                   </div>
                 </div>
               </fieldset>
@@ -406,14 +406,14 @@ const PersonalDashboard: React.FC = () => {
                   ) : (
                     <>
                       <Save className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
-                      Değişiklikleri Kaydet
+                     Save Changes
                     </>
                   )}
                 </button>
               </div>
               {updateGraphQLError && (
                 <p className="mt-2 text-sm text-red-600 dark:text-red-400 text-center">
-                  GraphQL Hatası: {updateGraphQLError.message}
+                  GraphQL Eroor: {updateGraphQLError.message}
                 </p>
               )}
             </form>

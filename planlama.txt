@@ -13,3 +13,23 @@ spotify list, alışveriş listem
 
 KURUMSAL LİNKLER:
 iş epostası, iş web sitesi, işyeri web sitesi, iş yeri adresi, iş telefonu, iş yeri telefon, iş yeri eposta,
+
+
+
+
+YAPILACAKLAR:
+Aşağıdaki sayfaları oluştur:
+Privacy Policy
+Terms of Service
+Cookie 
+
+Giriş için ise remember me kaldır, forget password için bir sayfa ekle(bir Google Form veya Jotform şifre değiştirme talep formu)
+
+Footer için ise:
+sosyal medya linklerini ekle, Space Teknopoli sayfasına yönlendirme ekle
+
+Personal Dashboard için ise:
+Kullanıcıya ait kısa linkleri göster, QR kod paylaşma, panoya kopyalama, wp, mesaj, facebook, twitter paylaşma özelliği ekle seçeneği olsun
+
+Link kısaltma işine bak, unique olarak eklenecek, bunu backend'de bak
+link kısaltma için ise wp, mesaj, facebook, twitter paylaşma özelliği ekle

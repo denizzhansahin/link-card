@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, Sun, Moon, Link as LinkIcon } from "lucide-react";
-import { useTheme } from "../context/ThemeContext";
 
 import { useRouter } from 'next/navigation';
 
@@ -12,7 +11,6 @@ import { useRouter } from 'next/navigation';
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
 
   const router = useRouter();
@@ -147,13 +145,7 @@ const Navbar: React.FC = () => {
           {/* Mobile Menu Button & Theme Toggle */}
           <div className="flex items-center md:hidden">
             {/* Tema Değiştirme Butonu (Mobile) */}
-            <button
-                onClick={toggleTheme}
-                className="p-2 mr-2 rounded-full text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800" // Orijinaldeki gibi
-                aria-label="Toggle theme"
-            >
-                {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </button>
+
             {/* Hamburger Menu Button */}
             <button
               onClick={() => setIsOpen(!isOpen)}

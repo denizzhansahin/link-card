@@ -10,7 +10,6 @@ import { Operation } from '@apollo/client';
 import { Provider, useDispatch } from "react-redux";
 import { store } from './store'
 import { setKullanici } from "./redux/kullaniciGirisSlice";
-import { ThemeProvider } from "./context/ThemeContext";
 import { ToastProvider } from "./context/ToastContext";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -76,7 +75,6 @@ export default function ClientComponent({ children }: { children: React.ReactNod
     <Provider store={store}>
       <ApolloProvider client={client}>
         <ReduxInitializer>
-        <ThemeProvider>
           <ToastProvider>
             <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
               <Navbar />
@@ -86,7 +84,6 @@ export default function ClientComponent({ children }: { children: React.ReactNod
               <Footer />
             </div>
           </ToastProvider>
-        </ThemeProvider>
         </ReduxInitializer>
       </ApolloProvider>
     </Provider>
