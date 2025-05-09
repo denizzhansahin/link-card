@@ -11,7 +11,7 @@ import { useMutation, gql } from '@apollo/client'; // gql import edildi
 // import { UPDATE_USER_MUTATION } from '../GraphQl/KullaniciGraphQl'; // Yerine doğrudan tanımlayacağız
 
 // GraphQL Mutation (doğrudan burada tanımlıyoruz, DTO'nuza uygun)
-export const UPDATE_USER_MUTATION = gql`
+const UPDATE_USER_MUTATION = gql`
   mutation KullaniciGuncelle($kullaniciId: String!, $kullaniciGuncelleData: KullaniciGuncelleDto!) {
     kullaniciGuncelle(kullaniciId: $kullaniciId, kullaniciGuncelleData: $kullaniciGuncelleData) {
       id
