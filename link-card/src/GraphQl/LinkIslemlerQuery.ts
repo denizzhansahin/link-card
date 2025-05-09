@@ -20,8 +20,8 @@ import { Public } from 'src/auth/decorators/public.deacorator';
 export class LinkIslemlerGraphQl { // Sınıf adını dosya adına göre değiştirebilirsiniz (LinkIslemlerResolver)
     constructor(private readonly linkIslemlerService: LinkIslemlerService) { }
 
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.ADMIN,Role.KULLANICI)
+
+    @Public()
     @Mutation(() => Link, { name: 'kisaLinkOlustur' }) // GraphQL şemanızla eşleşmesi için name eklenebilir
     async createLink(@Args('linkData') linkData: KisaLinkOlusturDto): Promise<Link> {
         return this.linkIslemlerService.createLink(linkData);
@@ -125,6 +125,13 @@ export class LinkIslemlerGraphQl { // Sınıf adını dosya adına göre değiş
     @Query(() => Link, { name: 'getLinkById' })
     async getLinkById(@Args('id', { type: () => String }) id: string): Promise<Link> {
         return this.linkIslemlerService.getLinkById(id);
+    }
+
+
+    @Public()
+    @Query(() => Link, { name: 'getLinkByIdShortUrl' })
+    async getLinkByIdShortUrl(@Args('kisaltmaToken', { type: () => String }) kisaltmaToken: string): Promise<Link> {
+        return this.linkIslemlerService.getLinkByShortUrl(kisaltmaToken);
     }
 
     // Get all Links

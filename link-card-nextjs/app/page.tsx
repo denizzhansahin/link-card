@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from 'react';
-import { Copy, QrCode,  Check, Link as LinkIcon, Globe, User } from 'lucide-react';
+import { Copy, QrCode, MessageCircle, MessageSquare,   Check, Link as LinkIcon, Globe, User } from 'lucide-react';
 import LinkShorteningForm from "./components/link/LinkShorteningForm";
 import QRCodeModal from "./components/link/QRCodeModal";
 import { useToast } from "./context/ToastContext";
@@ -82,32 +82,100 @@ export default function Home() {
             
             {/* Shortened URL display */}
             {shortenedUrl && (
-              <div className="mt-6 flex items-center p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 backdrop-blur-sm">
-                <p className="flex-1 truncate font-medium text-indigo-600 dark:text-indigo-400">
-                  {shortenedUrl}
-                </p>
-                <div className="flex gap-2">
-                  <button
-                    onClick={handleGenerateQR}
-                    className="p-2 rounded-md text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                    aria-label="Generate QR Code"
-                  >
-                    <QrCode className="h-5 w-5" />
-                  </button>
-                  <button
-                    onClick={copyToClipboard}
-                    className="p-2 rounded-md text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                    aria-label="Copy to clipboard"
-                  >
-                    {copiedLink ? (
-                      <Check className="h-5 w-5 text-green-500" />
-                    ) : (
-                      <Copy className="h-5 w-5" />
-                    )}
-                  </button>
+              <div className="mt-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 backdrop-blur-sm">
+                {/* URL ve butonları içeren ana flex container */}
+                <div className="flex items-center justify-between gap-4">
+                  <p className="flex-1 truncate font-medium text-indigo-600 dark:text-indigo-400">
+                    {shortenedUrl}
+                  </p>
+                  {/* Sağ taraftaki buton grubu */}
+                  <div className="flex items-center gap-1 sm:gap-2"> {/* Butonlar arası boşluğu ayarla */}
+                    <button
+                      onClick={handleGenerateQR}
+                      className="p-2 rounded-md text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      aria-label="Generate QR Code"
+                      title="Generate QR Code"
+                    >
+                      <QrCode className="h-5 w-5" />
+                    </button>
+                    <button
+                      onClick={copyToClipboard}
+                      className="p-2 rounded-md text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      aria-label="Copy to clipboard"
+                      title="Copy to clipboard"
+                    >
+                      {copiedLink ? (
+                        <Check className="h-5 w-5 text-green-500" />
+                      ) : (
+                        <Copy className="h-5 w-5" />
+                      )}
+                    </button>
+
+                    {/* --- YENİ PAYLAŞIM BUTONLARI BAŞLANGICI --- */}
+                    
+                    {/* WhatsApp */}
+                    <a
+                      href={`https://wa.me/?text=${encodeURIComponent('Şu harika linke göz atın: ' + shortenedUrl)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 rounded-md text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      aria-label="Share on WhatsApp"
+                      title="Share on WhatsApp"
+                    >
+                      {/* WhatsApp için Lucide ikonu veya kendi SVG'niz */}
+                      <MessageCircle className="h-5 w-5 text-green-500" /> 
+                    </a>
+
+                    {/* Twitter (X) */}
+                    <a
+                      href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shortenedUrl)}&text=${encodeURIComponent('Şuna bir bakın: ')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 rounded-md text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      aria-label="Share on Twitter"
+                      title="Share on Twitter"
+                    >
+                      {/* Twitter (X) SVG İkonu */}
+                      <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+                      </svg>
+                    </a>
+
+                    {/* Facebook */}
+                    <a
+                      href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shortenedUrl)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 rounded-md text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      aria-label="Share on Facebook"
+                      title="Share on Facebook"
+                    >
+                      {/* Facebook SVG İkonu */}
+                      <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12Z" clipRule="evenodd"></path>
+                      </svg>
+                    </a>
+                    
+                    {/* SMS (Mesaj) */}
+                    <a
+                      // Not: `sms:` davranışı cihaza göre değişir. iOS için `&body=`, Android için `?body=`. `?&body=` her ikisini de kapsamaya çalışır.
+                      // En iyi sonuç için, sadece URL göndermek daha tutarlı olabilir: `sms:${shortenedUrl}`
+                      href={`sms:?&body=${encodeURIComponent('Şu linke göz at: ' + shortenedUrl)}`}
+                      className="p-2 rounded-md text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      aria-label="Share via SMS"
+                      title="Share via SMS"
+                    >
+                      <MessageSquare className="h-5 w-5" />
+                    </a>
+                    {/* --- YENİ PAYLAŞIM BUTONLARI SONU --- */}
+                  </div>
                 </div>
+
+                {/* Opsiyonel: Paylaşım butonları için küçük bir başlık */}
+                {/* <p className="text-xs text-gray-500 dark:text-gray-400 mt-3 text-right mr-1">Şurada paylaş:</p> */}
               </div>
             )}
+
           </div>
         </div>
       </section>
@@ -141,6 +209,36 @@ export default function Home() {
                 </p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+
+      {/* Rastgele Section */}
+      {/* Mavi Tonlarda Çağrı (CTA) Section */}
+      <section className="py-16 bg-gradient-to-r from-blue-600 to-sky-500 dark:from-blue-700 dark:to-sky-600 rounded-xl shadow-lg">
+        <div className="mx-auto max-w-5xl px-6 text-center">
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-white">
+            Hadi Biraz Eğlenelim Mi?
+          </h2>
+          <p className="mt-4 text-lg text-blue-100 dark:text-sky-100"> {/* Hafif mavi tonu */}
+            Rastgele Kullanıcı veya Kısa Linkler ile Karşılaşmak İster Misiniz?
+          </p>
+          <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/personal"
+              className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-semibold rounded-lg text-blue-700 bg-white hover:bg-blue-50 dark:text-blue-600 dark:hover:bg-sky-50 transition-colors shadow-md hover:shadow-lg"
+            >
+              Personal Dashboard
+              <User className="ml-2 h-5 w-5" />
+            </Link>
+            <Link
+              href="/corporate"
+              className="inline-flex items-center justify-center px-6 py-3 border border-white/80 dark:border-sky-300/70 text-base font-semibold rounded-lg text-white hover:bg-white/10 dark:hover:bg-sky-500/30 transition-colors shadow-md hover:shadow-lg"
+            >
+              Corporate Dashboard
+              <Globe className="ml-2 h-5 w-5" />
+            </Link>
           </div>
         </div>
       </section>

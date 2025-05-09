@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Github as GitHub, Twitter, Linkedin, Link as LinkIcon } from 'lucide-react';
+import { Github as GitHub, Twitter, Linkedin, Earth ,Link  as LinkIcon } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
@@ -19,15 +19,15 @@ const Footer: React.FC = () => {
               A modern platform for shortening links and managing your online presence.
             </p>
             <div className="mt-4 flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+              <a href="https://github.com/denizzhansahin/link-card" className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
                 <span className="sr-only">GitHub</span>
                 <GitHub className="h-5 w-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
-                <span className="sr-only">Twitter</span>
-                <Twitter className="h-5 w-5" />
+              <a href="https://spaceteknopoliweb.vercel.app/" className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                <span className="sr-only">WEB</span>
+                <Earth className="h-5 w-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+              <a href="https://www.linkedin.com/company/spaceteknopoli/" className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
                 <span className="sr-only">LinkedIn</span>
                 <Linkedin className="h-5 w-5" />
               </a>

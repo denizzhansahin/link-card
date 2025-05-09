@@ -9,10 +9,6 @@ export class KisaLinkOlusturDto {
     @Length(1, 1000)
     asilMetinAdi: string;
 
-    @Field()
-    @IsString()
-    @Length(1, 100)
-    kisaltmaToken: string;
 
     @Field({ nullable: true })
     @IsOptional()

@@ -7,8 +7,6 @@ export class KisaLinkGuncelleDto extends PartialType(KisaLinkOlusturDto) {
     @Field({ nullable: true })
     asilMetinAdi?: string;
 
-    @Field({ nullable: true })
-    kisaltmaToken?: string;
 
     @Field({ nullable: true })
     kullaniciId?: string;

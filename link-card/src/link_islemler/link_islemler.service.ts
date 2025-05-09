@@ -33,10 +33,15 @@ export class LinkIslemlerService {
             }
         }
 
+        const kisaltmaToken = Math.random().toString(36).substring(2, 8);
+
         const newLink = this.linkRepository.create({
             ...restLinkData,
             kullanici: kullanici, // Kullanıcıyı ata (undefined olabilir)
+            kisaltmaToken: kisaltmaToken, // Kısa link token'ını oluştur
         });
+
+        const { id, ...yeniLink } = newLink;
         return await this.linkRepository.save(newLink);
     }
 
@@ -169,6 +174,15 @@ export class LinkIslemlerService {
         const link = await this.linkRepository.findOne({
             where: { id },
             relations: ['kullanici'],
+        });
+        if (!link) throw new NotFoundException('Link not found');
+        return link;
+    }
+
+    // Get a single Link by ID
+    async getLinkByShortUrl(kisaltmaToken: string): Promise<Link> {
+        const link = await this.linkRepository.findOne({
+            where: { kisaltmaToken },
         });
         if (!link) throw new NotFoundException('Link not found');
         return link;

@@ -1,6 +1,22 @@
 import { gql } from '@apollo/client';
 
 
+export const GET_PERSONAL_KISA_LINK = gql`
+query GetKullaniciLinkleriById($kullaniciId: String!) {
+  kullaniciBul(id: $kullaniciId) {
+    id
+    nickname
+    linkler {
+      id
+      asilMetinAdi
+      kisaltmaToken
+      olusturmaTarihi
+      guncellemeTarihi
+    }
+  }
+}
+`
+
 export const GET_PERSONAL_LINKS = gql`
   query GetPersonalLinks($userId: String!) {
     kullaniciBul(id: $userId) {
@@ -228,6 +244,40 @@ query GetKurumsalLinkByNickname($userNickname: String!) {
       #   nickname
       # }
     }
+  }
+}
+`
+
+
+export const CREATE_KISA_LINK = gql `
+mutation KisaLinkOlusturMutation($linkData: KisaLinkOlusturDto!) {
+  kisaLinkOlustur(linkData: $linkData) {
+    asilMetinAdi
+    kisaltmaToken
+    olusturmaTarihi
+  }
+}
+
+`
+
+export const CREATE_KULLANICI_KISALTLINK = gql `
+mutation KisaLinkOlusturMutation($linkData: KisaLinkOlusturDto!) {
+  kisaLinkOlustur(linkData: $linkData) {
+    asilMetinAdi
+    kisaltmaToken
+    olusturmaTarihi
+    kullanici {
+      nickname
+    }
+  }
+}
+`
+
+export const GET_KISA_LINK = gql `
+query GetLinkByShortToken($token: String!) {
+  getLinkByIdShortUrl(kisaltmaToken: $token) {
+    asilMetinAdi
+    kisaltmaToken
   }
 }
 `

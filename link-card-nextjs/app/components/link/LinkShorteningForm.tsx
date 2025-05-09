@@ -1,8 +1,11 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
+
+import { CREATE_KISA_LINK, CREATE_KULLANICI_KISALTLINK } from '@/app/GraphQl/LinklerGraphQl';
+import { useMutation } from '@apollo/client';
 
 interface LinkShorteningFormProps {
   onLinkShortened: (shortUrl: string) => void;
@@ -13,6 +16,43 @@ const LinkShorteningForm: React.FC<LinkShorteningFormProps> = ({ onLinkShortened
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { addToast } = useToast();
+
+
+
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedUser = localStorage.getItem('user');
+
+      if (storedUser) {
+        try {
+          setUser(storedUser ? JSON.parse(storedUser) : null);
+
+        } catch (error) {
+          console.error("Failed to parse user from localStorage:", error);
+          addToast('error', 'Kullanıcı verileri okunamadı.');
+        }
+      } else {
+        addToast('error', 'Kullanıcı verileri okunamadı.');
+      }
+
+
+    }
+  }, []);
+
+  console.log('User from localStorage:', user);
+
+
+
+
+
+  const [createKisaLink] = useMutation(CREATE_KISA_LINK);
+  const [createKisaLinkKullanici] = useMutation(CREATE_KISA_LINK);
+
+
+
+
 
   const validateUrl = (url: string): boolean => {
     try {
@@ -42,14 +82,43 @@ const LinkShorteningForm: React.FC<LinkShorteningFormProps> = ({ onLinkShortened
     try {
       // Simulate API call to shorten URL
       await new Promise(resolve => setTimeout(resolve, 800));
-      
-      // In a real app, we would call an actual API here
-      const shortCode = Math.random().toString(36).substring(2, 8);
-      const shortUrl = `https://lnk.sp/${shortCode}`;
-      
-      setIsLoading(false);
-      setUrl('');
-      onLinkShortened(shortUrl);
+
+      let data;
+
+      if (user?.id) {
+        const response = await createKisaLinkKullanici({
+          variables: {
+            linkData: {
+              kullaniciId: user?.id,
+              asilMetinAdi: url,
+            },
+          },
+        });
+        data = response.data;
+      } else {
+        const response = await createKisaLink({
+          variables: {
+            linkData: {
+              asilMetinAdi: url,
+            },
+          },
+        });
+        data = response.data;
+      }
+
+      if (data) {
+        const shortUrl = `http://192.168.56.1:3000/${data.kisaLinkOlustur.kisaltmaToken}`;
+
+        setIsLoading(false);
+        setUrl('');
+        onLinkShortened(shortUrl);
+      } else {
+        setIsLoading(false);
+        setUrl('');
+        addToast('error', 'Failed to shorten link. Please try again.');
+      }
+
+
     } catch (error) {
       setIsLoading(false);
       addToast('error', 'Failed to shorten link. Please try again.');
@@ -65,9 +134,8 @@ const LinkShorteningForm: React.FC<LinkShorteningFormProps> = ({ onLinkShortened
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="Enter your long URL here..."
-            className={`w-full py-3 px-4 border ${
-              error ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
-            } rounded-lg bg-white dark:bg-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-all duration-200`}
+            className={`w-full py-3 px-4 border ${error ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
+              } rounded-lg bg-white dark:bg-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent transition-all duration-200`}
             aria-invalid={error ? 'true' : 'false'}
           />
           {error && (
@@ -79,9 +147,8 @@ const LinkShorteningForm: React.FC<LinkShorteningFormProps> = ({ onLinkShortened
         <button
           type="submit"
           disabled={isLoading}
-          className={`py-3 px-6 bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white rounded-lg transition-all duration-200 ${
-            isLoading ? 'opacity-70 cursor-not-allowed' : ''
-          } shadow-md hover:shadow-lg flex items-center justify-center gap-2 min-w-[120px]`}
+          className={`py-3 px-6 bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500 focus:ring-offset-indigo-200 text-white rounded-lg transition-all duration-200 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''
+            } shadow-md hover:shadow-lg flex items-center justify-center gap-2 min-w-[120px]`}
         >
           {isLoading ? (
             <>

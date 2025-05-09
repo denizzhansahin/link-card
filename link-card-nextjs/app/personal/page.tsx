@@ -6,10 +6,44 @@ import LinkCard from '../components/dashboard/LinkCard';
 import { useToast } from '../context/ToastContext';
 import QRCodeModal from '../components/link/QRCodeModal';
 import { useMutation, useQuery } from '@apollo/client';
-import { GET_PERSONAL_LINKS, UPDATE_KISISEL_LINK_MUTATION } from '../GraphQl/LinklerGraphQl';
+import { GET_PERSONAL_LINKS, UPDATE_KISISEL_LINK_MUTATION, GET_PERSONAL_KISA_LINK } from '../GraphQl/LinklerGraphQl';
 import Modal from '../components/common/Modal';
 
 import { useRouter } from 'next/navigation';
+
+
+
+// PersonalDashboard.tsx dosyanızın başında
+// ... mevcut importlarınız
+import {
+  // ... mevcut ikonlarınız ...
+  Copy, QrCode, Check, Share2, Trash2, // Share2 genel paylaşım için, Trash2 silme için (opsiyonel)
+  // Link as LinkIcon, // Eğer LinkIcon adında zaten bir importunuz varsa (next/link gibi), buna gerek yok veya yeniden adlandırın
+  MessageCircle as WhatsAppIcon, // WhatsApp için (yeşil renk verilebilir)
+  MessageSquare as SmsIcon,     // SMS için
+} from 'lucide-react';
+
+// Twitter (X) ve Facebook için SVG'leri doğrudan kullanacağız
+const TwitterIcon = () => (
+  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+  </svg>
+);
+const FacebookIcon = () => (
+  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12Z" clipRule="evenodd"></path>
+  </svg>
+);
+
+
+// PersonalDashboard.tsx dosyasının üst kısmına
+interface ShortLink {
+  id: string;
+  asilMetinAdi: string;
+  kisaltmaToken: string;
+  olusturmaTarihi: string; // Veya DateTime scalar'ınız Date objesine dönüşüyorsa Date
+  guncellemeTarihi: string; // Kullanılmayacaksa opsiyonel
+}
 
 
 interface KisiselLinkGuncelleDtoInput {
@@ -43,7 +77,10 @@ const PersonalDashboard: React.FC = () => {
 
   const router = useRouter();
 
-
+  // PersonalDashboard.tsx içinde
+  // const [showQRModal, setShowQRModal] = useState(false); // Bu zaten var
+  // const [selectedUrl, setSelectedUrl] = useState(''); // Bu zaten var
+  const [copiedShortLinks, setCopiedShortLinks] = useState<Record<string, boolean>>({}); // Her kısa linkin kopyalanma durumu
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
@@ -196,6 +233,53 @@ const PersonalDashboard: React.FC = () => {
     }
   }, [data]);
 
+
+  // PersonalDashboard.tsx içinde, mevcut useQuery'nin yanına veya altına:
+  const {
+    data: shortLinksData,
+    loading: shortLinksLoading,
+    error: shortLinksError,
+    refetch: refetchShortLinks
+  } = useQuery(GET_PERSONAL_KISA_LINK, { // Yeni sorguyu burada kullanın
+    variables: { kullaniciId: user ? user.id : null }, // Değişken adını sorgunuza göre ayarlayın
+    skip: !user?.id,
+    fetchPolicy: 'cache-and-network',
+  });
+
+  // GraphQL'den gelen kısa linkleri bir değişkene atayalım
+  const userShortLinks: ShortLink[] = shortLinksData?.kullaniciBul?.linkler || [];
+
+  console.log('Kullanıcının Kısa Linkleri:', userShortLinks);
+
+
+  const copyShortLinkToClipboard = (linkId: string, urlToCopy: string) => {
+    if (!urlToCopy) return;
+    navigator.clipboard.writeText(urlToCopy)
+      .then(() => {
+        setCopiedShortLinks(prev => ({ ...prev, [linkId]: true }));
+        addToast('success', 'Short link copied!');
+        setTimeout(() => setCopiedShortLinks(prev => ({ ...prev, [linkId]: false })), 2000);
+      })
+      .catch(() => {
+        addToast('error', 'Failed to copy short link.');
+      });
+  };
+
+
+  // PersonalDashboard.tsx içinde (veya bir utils dosyasında)
+  const formatDate = (dateString: string) => {
+    if (!dateString) return 'N/A';
+    try {
+      return new Date(dateString).toLocaleDateString('tr-TR', { // 'en-US' veya istediğiniz lokal
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
+    } catch (e) {
+      return 'Invalid Date';
+    }
+  };
+
   return (
     <>
       <div className="space-y-8 pt-14">
@@ -207,27 +291,27 @@ const PersonalDashboard: React.FC = () => {
             </div>
             <div className="flex flex-col space-y-2">
               <button
-              onClick={toggleEditMode}
-              className={`px-4 py-2 rounded-md border border-white/30 backdrop-blur-sm transition-all ${isEditing
-                ? 'bg-white text-pink-600 hover:bg-pink-50'
-                : 'bg-white/10 hover:bg-white/20'
-                }`}
+                onClick={toggleEditMode}
+                className={`px-4 py-2 rounded-md border border-white/30 backdrop-blur-sm transition-all ${isEditing
+                  ? 'bg-white text-pink-600 hover:bg-pink-50'
+                  : 'bg-white/10 hover:bg-white/20'
+                  }`}
               >
-              {isEditing ? 'Save Changes' : 'Edit Dashboard'}
+                {isEditing ? 'Save Changes' : 'Edit Dashboard'}
               </button>
               <button
-              onClick={() => handleGenerateQR(`http://localhost:3000/p/${user?.nickname}`)}
-              className={`px-4 py-2 rounded-md border border-white/30 backdrop-blur-sm transition-all ${isEditing
-                ? 'bg-white text-pink-600 hover:bg-pink-50'
-                : 'bg-white/10 hover:bg-white/20'
-                }`}
+                onClick={() => handleGenerateQR(`http://localhost:3000/p/${user?.nickname}`)}
+                className={`px-4 py-2 rounded-md border border-white/30 backdrop-blur-sm transition-all ${isEditing
+                  ? 'bg-white text-pink-600 hover:bg-pink-50'
+                  : 'bg-white/10 hover:bg-white/20'
+                  }`}
               >
-              Share Me
+                Share Me
               </button>
             </div>
           </div>
-          
-        
+
+
         </div>
 
         {/* Social Media Links - Windows 8 Style */}
@@ -294,6 +378,201 @@ const PersonalDashboard: React.FC = () => {
             ))}
           </div>
         </section>
+
+        // PersonalDashboard.tsx içinde, return ifadesinin bir parçası olarak
+
+        {/* My Shortened Links Section */}
+        <section className="mt-12">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">My Shortened Links</h2>
+            {/* İsteğe bağlı: Yeni link kısaltma sayfasına yönlendirme butonu */}
+            {/*
+    <Link href="/shorten" passHref>
+      <a className="px-4 py-2 text-sm font-medium text-white bg-pink-600 rounded-lg hover:bg-pink-700 transition-colors">
+        Shorten New Link
+      </a>
+    </Link>
+    */}
+          </div>
+
+          {shortLinksLoading && (
+            <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md text-center">
+              <p className="text-gray-500 dark:text-gray-400">Loading your short links...</p>
+              {/* Spinner eklenebilir */}
+            </div>
+          )}
+          {shortLinksError && (
+            <div className="p-6 bg-red-50 dark:bg-red-900/20 rounded-lg shadow-md text-center">
+              <p className="text-red-600 dark:text-red-300">
+                Error loading short links. Please try refreshing.
+              </p>
+            </div>
+          )}
+
+          {!shortLinksLoading && !shortLinksError && userShortLinks.length === 0 && (
+            <div className="p-8 bg-white dark:bg-gray-800 rounded-xl shadow-md text-center border border-gray-200 dark:border-gray-700">
+              {/* Lucide-react'ten LinkIcon'u kullanabilirsiniz, eğer next/link ile çakışıyorsa yeniden adlandırın */}
+              <FileText className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
+              <h3 className="mt-3 text-lg font-medium text-gray-900 dark:text-white">No short links yet</h3>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                You haven't created any short links.
+              </p>
+              {/*
+      <div className="mt-6">
+        <Link href="/shorten" passHref>
+           <a className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500">
+            Create your first link
+          </a>
+        </Link>
+      </div>
+      */}
+            </div>
+          )}
+
+          {!shortLinksLoading && userShortLinks.length > 0 && (
+            <div className="overflow-hidden shadow-lg rounded-xl border border-gray-200 dark:border-gray-700">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
+                  <thead className="bg-gray-50 dark:bg-gray-700/70">
+                    <tr>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        Original URL
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        Short Link
+                      </th>
+                      <th scope="col" className="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        Created
+                      </th>
+                      <th scope="col" className="px-6 py-3 text-center text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                    {userShortLinks.map((link) => {
+                      const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://yourdomain.com'; // Domain'inizi buraya yazın veya dinamik alın
+                      const fullShortUrl = `${baseUrl}/${link.kisaltmaToken}`; // Varsa bir prefix (örn: /s/) ekleyebilirsiniz: `${baseUrl}/s/${link.kisaltmaToken}`
+                      const displayShortUrl = fullShortUrl.replace(/^https?:\/\//, '');
+
+                      return (
+                        <tr key={link.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors duration-150">
+                          <td className="px-6 py-4 max-w-xs sm:max-w-md md:max-w-lg">
+                            <a
+                              href={link.asilMetinAdi}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm font-medium text-gray-800 dark:text-gray-100 hover:text-pink-600 dark:hover:text-pink-400 truncate block"
+                              title={link.asilMetinAdi}
+                            >
+                              {link.asilMetinAdi}
+                            </a>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <a
+                              href={fullShortUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-pink-600 dark:text-pink-400 hover:underline"
+                            >
+                              {displayShortUrl}
+                            </a>
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                            {formatDate(link.olusturmaTarihi)}
+                          </td>
+                          <td className="px-6 py-3 whitespace-nowrap text-center">
+                            <div className="flex items-center justify-center space-x-1 sm:space-x-2">
+                              <button
+                                onClick={() => copyShortLinkToClipboard(link.id, fullShortUrl)}
+                                className="p-1.5 sm:p-2 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-pink-600 dark:hover:text-pink-400 transition-colors"
+                                aria-label="Copy short link"
+                                title="Copy short link"
+                              >
+                                {copiedShortLinks[link.id] ? (
+                                  <Check className="h-4 w-4 text-green-500" />
+                                ) : (
+                                  <Copy className="h-4 w-4" />
+                                )}
+                              </button>
+                              <button
+                                onClick={() => handleGenerateQR(fullShortUrl)}
+                                className="p-1.5 sm:p-2 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-pink-600 dark:hover:text-pink-400 transition-colors"
+                                aria-label="Generate QR Code"
+                                title="Generate QR Code"
+                              >
+                                <QrCode className="h-4 w-4" />
+                              </button>
+
+                              {/* Paylaşım Butonları */}
+                              <a
+                                href={`https://wa.me/?text=${encodeURIComponent('Check out this link: ' + fullShortUrl)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-1.5 sm:p-2 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-green-500 dark:hover:text-green-400 transition-colors"
+                                aria-label="Share on WhatsApp"
+                                title="Share on WhatsApp"
+                              >
+                                <WhatsAppIcon className="h-4 w-4" />
+                              </a>
+                              <a
+                                href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(fullShortUrl)}&text=${encodeURIComponent('Found this cool link: ')}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-1.5 sm:p-2 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-sky-500 dark:hover:text-sky-400 transition-colors"
+                                aria-label="Share on Twitter"
+                                title="Share on Twitter"
+                              >
+                                <TwitterIcon />
+                              </a>
+                              <a
+                                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(fullShortUrl)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-1.5 sm:p-2 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                aria-label="Share on Facebook"
+                                title="Share on Facebook"
+                              >
+                                <FacebookIcon />
+                              </a>
+                              <a
+                                href={`sms:?&body=${encodeURIComponent('Hey, check this link: ' + fullShortUrl)}`}
+                                className="p-1.5 sm:p-2 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-purple-500 dark:hover:text-purple-400 transition-colors"
+                                aria-label="Share via SMS"
+                                title="Share via SMS"
+                              >
+                                <SmsIcon className="h-4 w-4" />
+                              </a>
+                              {/* Opsiyonel: Silme Butonu */}
+                              {/*
+                        <button
+                          onClick={() => handleDeleteShortLink(link.id)} // Bu fonksiyonu tanımlamanız gerekir
+                          className="p-1.5 sm:p-2 rounded-md text-red-500 hover:bg-red-100 dark:hover:bg-red-700/50 transition-colors"
+                          aria-label="Delete short link"
+                          title="Delete short link"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                       */}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </section>
+
+        {/* QR Code Modal (Bu zaten mevcut olmalı) */}
+        {showQRModal && (
+          <QRCodeModal
+            url={selectedUrl} // selectedUrl state'i hem kisiselLink hem de shortLink için kullanılabilir
+            onClose={() => setShowQRModal(false)}
+          />
+        )}
 
         {/* QR Code Modal */}
         {showQRModal && (

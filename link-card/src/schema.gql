@@ -79,6 +79,7 @@ type Query {
   kullaniciBul(id: String!): Kullanici
   kullaniciBul_profil(nickname: String!): Kullanici
   getLinkById(id: String!): Link!
+  getLinkByIdShortUrl(kisaltmaToken: String!): Link!
   getAllLinks: [Link!]!
   getKisiselLinkById(id: String!): KisiselLink!
   getAllKisiselLinks: [KisiselLink!]!
@@ -121,13 +122,11 @@ input KullaniciGuncelleDto {
 
 input KisaLinkOlusturDto {
   asilMetinAdi: String!
-  kisaltmaToken: String!
   kullaniciId: String
 }
 
 input KisaLinkGuncelleDto {
   asilMetinAdi: String
-  kisaltmaToken: String
   kullaniciId: String
 }
 
