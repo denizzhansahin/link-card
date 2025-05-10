@@ -132,7 +132,7 @@ const PersonalDashboard: React.FC = () => {
       const file = e.target.files[0];
       // Dosya boyutu kontrolü (örneğin 2MB)
       if (file.size > 1 * 512 * 512) {
-          addToast('error', 'File size cannot exceed 2MB.');
+          addToast('error', 'File size cannot exceed 1MB.');
           return;
       }
       const reader = new FileReader();
@@ -302,7 +302,7 @@ const PersonalDashboard: React.FC = () => {
                           <Trash2 className="mr-2 h-5 w-5" /> Remove Photo
                         </button>
                     )}
-                    <p className="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, WEBP (Max 5MB). 1:1 square image for best result.</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, WEBP (Max 1MB). 1:1 square image for best result.</p>
                   </div>
                 </div>
               </fieldset>
