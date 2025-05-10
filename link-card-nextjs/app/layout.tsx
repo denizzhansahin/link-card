@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Link Card",
-  description: "Generate your own link card",
+  title: "LinkSphere",
+  description: "Generate your own LinkSphere",
 };
 
 export default function RootLayout({
