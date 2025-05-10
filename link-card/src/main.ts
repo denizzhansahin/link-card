@@ -21,8 +21,8 @@ async function bootstrap() {
     credentials: true,
   });
 
-  app.use(express.json({ limit: '50mb' }));
-  app.use(express.urlencoded({ limit: '50mb', extended: true }));
+  app.use(express.json({ limit: '1mb' }));
+  app.use(express.urlencoded({ limit: '1mb', extended: true }));
 
   // Uygulamayı belirtilen portta başlat
   const port = process.env.PORT || 5000;
