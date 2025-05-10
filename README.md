@@ -13,6 +13,7 @@
 - [Installation](#installation)
 - [Usage](#usage)
 - [GraphQL API](#graphql-api)
+- [Technical Details](#technical-details)
 - [DeepWiki Documentation](#deepwiki-documentation)
 - [Contributing](#contributing)
 - [License](#license)
@@ -116,6 +117,86 @@ mutation {
   }
 }
 ```
+
+## Technical Details
+
+This section provides more code examples and explanations regarding the backend architecture, coding practices, and GraphQL integration.
+
+### Backend Implementation
+
+Our backend is built using [NestJS](https://nestjs.com/), leveraging TypeORM for database management and Apollo Server for GraphQL API support.
+
+**Example: NestJS Module Setup**
+```typescript
+// src/app.module.ts
+import { Module } from '@nestjs/common';
+import { GraphQLModule } from '@nestjs/graphql';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Kullanici } from './Entities/kullanici.entity';
+import { KisiselLink } from './Entities/kisiselLink.entity';
+import { KurumsalLink } from './Entities/kurumsalLink.entity';
+import { Link } from './Entities/kisalink.entity';
+import { KullaniciModule } from './kullanici/kullanici.module';
+import { LinkIslemlerModule } from './link_islemler/link_islemler.module';
+
+@Module({
+  imports: [
+    GraphQLModule.forRoot({
+      autoSchemaFile: 'src/schema.gql',
+      context: ({ req, res }) => ({ req, res }),
+      playground: true,
+    }),
+    TypeOrmModule.forRoot({
+      type: 'sqlite',
+      database: 'database.sqlite',
+      entities: [Kullanici, KisiselLink, KurumsalLink, Link],
+      synchronize: true,
+    }),
+    KullaniciModule,
+    LinkIslemlerModule,
+    // ...other modules...
+  ],
+})
+export class AppModule {}
+```
+
+### GraphQL Schema & Resolvers
+
+GraphQL schema is automatically generated from the resolvers and DTOs. The following examples illustrate how our queries and mutations are structured:
+
+**Random Nickname Query Resolver:**
+```typescript
+// src/GraphQl/KullaniciQuery.ts
+@Resolver(() => Kullanici)
+export class KullaniciGraphQl {
+  constructor(private kullaniciService: KullaniciService) {}
+  
+  @Public()
+  @Query(() => String, { name: 'getRandomNickname' })
+  async getRandomNickname(): Promise<string> {
+    return await this.kullaniciService.getRandomNickname();
+  }
+  // ...other resolvers...
+}
+```
+
+**Sample Mutation: Creating a User**
+```typescript
+// src/GraphQl/KullaniciQuery.ts
+@Public()
+@Mutation(() => Kullanici, { name: 'kullaniciOlustur' })
+async createKullanici(@Args('kullaniciData') kullaniciData: KullaniciOlusturDto): Promise<Kullanici> {
+  return this.kullaniciService.kullaniciOlustur(kullaniciData);
+}
+```
+
+### Coding Practices
+
+- **Modularity:** The project is structured into modules (e.g., KullaniciModule and LinkIslemlerModule) to keep related functionality encapsulated.
+- **Error Handling:** We use NestJS's built-in exception filters for graceful error management.
+- **Security:** JWT authentication and role-based authorization (implemented via custom guards) ensure secure access.
+- **Code Quality:** TypeScript is used throughout the backend for strong typing, and auto-generated GraphQL schema keeps the API consistent.
+- **Testing:** GraphQL Playground aids in rapid testing of queries and mutations before integration with the frontend.
 
 ## DeepWiki Documentation
 
