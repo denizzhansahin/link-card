@@ -131,7 +131,7 @@ const PersonalDashboard: React.FC = () => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       // Dosya boyutu kontrolü (örneğin 2MB)
-      if (file.size > 5 * 1024 * 1024) {
+      if (file.size > 1 * 512 * 512) {
           addToast('error', 'File size cannot exceed 2MB.');
           return;
       }
