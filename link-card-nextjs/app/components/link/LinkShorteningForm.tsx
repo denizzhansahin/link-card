@@ -107,7 +107,7 @@ const LinkShorteningForm: React.FC<LinkShorteningFormProps> = ({ onLinkShortened
       }
 
       if (data) {
-        const shortUrl = `http://192.168.56.1:3000/${data.kisaLinkOlustur.kisaltmaToken}`;
+        const shortUrl = `http://localhost:3000/${data.kisaLinkOlustur.kisaltmaToken}`;
 
         setIsLoading(false);
         setUrl('');

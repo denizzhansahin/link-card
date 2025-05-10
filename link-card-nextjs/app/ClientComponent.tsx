@@ -16,7 +16,7 @@ import Footer from "./components/Footer";
 
 // GraphQL sunucunuzun URL'si
 const httpLink = new HttpLink({
-  uri: 'http://192.168.0.166:5000/graphql'
+  uri: 'http://localhost:5000/graphql'
 });
 
 // Token'ı header'a ekleyen middleware (sadece token varsa)

@@ -41,19 +41,77 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({ url, onClose }) => {
     return () => window.removeEventListener('keydown', handleEsc);
   }, [onClose]);
 
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(url);
-      addToast('success', 'Link copied to clipboard!');
-    } catch (error) {
-      addToast('error', 'Failed to copy link');
+  async function copyToClipboardModern(text: string): Promise<boolean> {
+  if (!navigator.clipboard) {
+    console.warn("Modern Pano API'si (navigator.clipboard) desteklenmiyor.");
+    return false;
+  }
+  try {
+    await navigator.clipboard.writeText(text);
+    console.log("Metin panoya kopyalandı (Modern API).");
+    return true;
+  } catch (err) {
+    console.error("Modern API ile kopyalama başarısız oldu:", err);
+    return false;
+  }
+}
+
+function copyToClipboardLegacy(text: string): boolean {
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+
+  // Görünmez yap ve sayfa akışını etkilememesini sağla
+  textArea.style.position = "fixed";
+  textArea.style.top = "0";
+  textArea.style.left = "0";
+  textArea.style.width = "2em";
+  textArea.style.height = "2em";
+  textArea.style.padding = "0";
+  textArea.style.border = "none";
+  textArea.style.outline = "none";
+  textArea.style.boxShadow = "none";
+  textArea.style.background = "transparent";
+
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select(); // Metni seç
+
+  let success = false;
+  try {
+    success = document.execCommand("copy");
+    if (success) {
+      console.log("Metin panoya kopyalandı (Eski yöntem).");
+    } else {
+      console.error("Eski yöntemle kopyalama komutu başarısız oldu.");
     }
-  };
+  } catch (err) {
+    console.error("Eski yöntemle kopyalama sırasında hata:", err);
+  }
+
+  document.body.removeChild(textArea);
+  return success;
+}
+
+async function copyTextToClipboard(textToCopy: string): Promise<boolean> {
+  // Önce modern API'yi dene
+  if (navigator.clipboard) {
+    const modernSuccess = await copyToClipboardModern(textToCopy);
+    if (modernSuccess) {
+      return true;
+    }
+    // Modern API başarısız olursa (örneğin HTTP'de veya izin verilmediyse),
+    // eski yöntemi deneyebiliriz.
+    console.warn("Modern API başarısız oldu, eski yönteme geçiliyor.");
+  }
+  
+  // Modern API yoksa veya başarısız olduysa eski yöntemi kullan
+  return copyToClipboardLegacy(textToCopy);
+}
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex min-h-screen items-center justify-center p-4 text-center sm:p-0">
-        <div 
+        <div
           className="fixed inset-0 bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-90 backdrop-blur-sm transition-opacity"
           onClick={onClose}
         ></div>
@@ -72,7 +130,7 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({ url, onClose }) => {
                 <X className="h-6 w-6" />
               </button>
             </div>
-            
+
             <div className="flex flex-col items-center justify-center py-4">
               <div className="bg-white p-4 rounded-md shadow-sm">
                 <QRCodeCanvas
@@ -83,11 +141,11 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({ url, onClose }) => {
                   includeMargin={true}
                 />
               </div>
-              
+
               <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
                 Scan this QR code to access: <span className="font-medium text-indigo-600 dark:text-indigo-400">{url}</span>
               </p>
-              
+
               <button
                 onClick={handleDownload}
                 className="mt-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -97,13 +155,14 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({ url, onClose }) => {
               </button>
 
               <button
-                onClick={copyToClipboard}
+                onClick={async () => await copyTextToClipboard(url)}
                 className="mt-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 aria-label="Copy link"
               >
                 <Copy className="w-5 h-5" />
                 Copy To Clipboard
               </button>
+
             </div>
           </div>
         </div>

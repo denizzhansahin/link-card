@@ -27,14 +27,72 @@ const LinkCard: React.FC<LinkCardProps> = ({
 }) => {
   const { addToast } = useToast();
 
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(url);
-      addToast('success', 'Link copied to clipboard!');
-    } catch (error) {
-      addToast('error', 'Failed to copy link');
+   async function copyToClipboardModern(text: string): Promise<boolean> {
+  if (!navigator.clipboard) {
+    console.warn("Modern Pano API'si (navigator.clipboard) desteklenmiyor.");
+    return false;
+  }
+  try {
+    await navigator.clipboard.writeText(text);
+    console.log("Metin panoya kopyalandı (Modern API).");
+    return true;
+  } catch (err) {
+    console.error("Modern API ile kopyalama başarısız oldu:", err);
+    return false;
+  }
+}
+
+function copyToClipboardLegacy(text: string): boolean {
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+
+  // Görünmez yap ve sayfa akışını etkilememesini sağla
+  textArea.style.position = "fixed";
+  textArea.style.top = "0";
+  textArea.style.left = "0";
+  textArea.style.width = "2em";
+  textArea.style.height = "2em";
+  textArea.style.padding = "0";
+  textArea.style.border = "none";
+  textArea.style.outline = "none";
+  textArea.style.boxShadow = "none";
+  textArea.style.background = "transparent";
+
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select(); // Metni seç
+
+  let success = false;
+  try {
+    success = document.execCommand("copy");
+    if (success) {
+      console.log("Metin panoya kopyalandı (Eski yöntem).");
+    } else {
+      console.error("Eski yöntemle kopyalama komutu başarısız oldu.");
     }
-  };
+  } catch (err) {
+    console.error("Eski yöntemle kopyalama sırasında hata:", err);
+  }
+
+  document.body.removeChild(textArea);
+  return success;
+}
+
+async function copyTextToClipboard(textToCopy: string): Promise<boolean> {
+  // Önce modern API'yi dene
+  if (navigator.clipboard) {
+    const modernSuccess = await copyToClipboardModern(textToCopy);
+    if (modernSuccess) {
+      return true;
+    }
+    // Modern API başarısız olursa (örneğin HTTP'de veya izin verilmediyse),
+    // eski yöntemi deneyebiliriz.
+    console.warn("Modern API başarısız oldu, eski yönteme geçiliyor.");
+  }
+  
+  // Modern API yoksa veya başarısız olduysa eski yöntemi kullan
+  return copyToClipboardLegacy(textToCopy);
+}
 
   return (
     <div className={`group relative bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 transition-all duration-200 hover:shadow-md ${isEditing ? 'ring-2 ring-indigo-300 dark:ring-indigo-700' : ''}`}>
@@ -76,7 +134,7 @@ const LinkCard: React.FC<LinkCardProps> = ({
           ) : (
             <>
               <button
-                onClick={copyToClipboard}
+                onClick={async () => await copyTextToClipboard(url)}
                 className="p-1.5 rounded-md text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                 aria-label="Copy link"
               >
