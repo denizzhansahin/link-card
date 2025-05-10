@@ -226,7 +226,7 @@ Please check our [Issue Tracker](https://github.com/denizzhansahin/link-card/iss
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under a custom license by Space Teknopoli. Please refer to the [LICENSE](LICENSE) file for full details regarding your rights and obligations.
 
 ## Repository
 
